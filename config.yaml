@@ -25,3 +25,57 @@ subscriptions:
     stage: A
     diff_threshold_pct: 15
   keyword_recall_mode: or
+  intent_profiles:
+    - tag: symbolic-reg
+      description: 符号回归方向：Transformer自回归，强化学习，扩散模型，液态神经网络
+      enabled: true
+      paper_sources:
+        - arxiv
+      keywords:
+        - keyword: symbolic regression
+          keyword_cn: 符号回归
+          query: symbolic regression techniques and methods
+        - keyword: autoregressive transformer
+          keyword_cn: 自回归Transformer
+          query: autoregressive transformer model for sequence generation
+        - keyword: reinforcement learning
+          keyword_cn: 强化学习
+          query: reinforcement learning algorithms and applications
+        - keyword: diffusion model
+          keyword_cn: 扩散模型
+          query: diffusion probabilistic models for generative tasks
+        - keyword: liquid neural network
+          keyword_cn: 液态神经网络
+          query: liquid neural network continuous time dynamical systems
+      intent_queries:
+        - query: How can reinforcement learning improve symbolic regression?
+          query_cn: 强化学习如何改进符号回归？
+          enabled: true
+          source: manual
+          note: ''
+        - query: Compare transformer autoregression and diffusion models for symbolic regression
+          query_cn: 比较自回归Transformer与扩散模型在符号回归中的应用
+          enabled: true
+          source: manual
+          note: ''
+        - query: Liquid neural networks for symbolic regression tasks
+          query_cn: 液态神经网络在符号回归任务中的应用
+          enabled: true
+          source: manual
+          note: ''
+      updated_at: '2026-06-04T14:24:51.408Z'
+source_backends:
+  arxiv:
+    papers_table: arxiv_papers
+    use_vector_rpc: true
+    vector_rpc: match_arxiv_papers
+    vector_rpc_exact: match_arxiv_papers_exact
+    use_bm25_rpc: true
+    bm25_rpc: match_arxiv_papers_bm25
+    sync_table: arxiv_sync_status
+    sync_success_value: success
+    schema: public
+    kind: supabase
+    enabled: true
+    url: https://lyucdwgefyfbmaiopjbk.supabase.co
+    anon_key: sb_publishable_lX-oi64Uxyd7SIVv3_w2Uw_MTOojeKq
