@@ -1,0 +1,700 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-05T21:17:37.206747+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 20,
+    "deep_cap": 6,
+    "deep_selected": 6,
+    "quick_candidates": 35,
+    "quick_skim_target": 11,
+    "quick_selected": 11
+  },
+  "deep_dive": [
+    {
+      "id": "2606.00367v1",
+      "source": "arxiv",
+      "title": "Reinforcement Learning with Pairwise Preferences in Long-Term Decision Problems",
+      "abstract": "Reinforcement learning problems typically define the goal as maximizing the expected value of a scalar reward function. But, pairwise preferences are often easier to specify than scalar rewards, and they express certain goals that scalar rewards cannot. Methods for reinforcement learning with pairwise preferences have thus received growing interest. Unfortunately, these methods are inefficient in problems with long time horizons, and they lack guarantees on the performance of Markov policies relative to history-dependent policies, which bridge the theory and practice of reinforcement learning. We therefore propose the \\textit{Markov decision contest} as a new problem model for reinforcement learning with pairwise preferences. We prove that stationary Markov policies are optimal among all history-dependent policies, that solving a Markov decision contest exactly is in P, and that a simple iterative algorithm converges to an optimal policy at a sublinear rate. Lastly, in a set of high-dimensional decision problems with long time horizons, we show that our approximate algorithm is significantly more learning-efficient than prior work.",
+      "authors": [
+        "Jonathan Colaço Carr",
+        "Prakash Panangaden",
+        "Doina Precup",
+        "Benjamin Van Roy"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-05-29T21:16:25+00:00",
+      "link": "https://arxiv.org/pdf/2606.00367v1",
+      "tags": [
+        "keyword:symbolic-reg",
+        "query:symbolic-reg"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "reinforcement learning with pairwise preferences, new problem model Markov decision contest",
+      "llm_evidence_cn": "基于成对偏好的强化学习，提出马尔可夫决策竞赛新模型",
+      "llm_evidence": "基于成对偏好的强化学习，提出马尔可夫决策竞赛新模型",
+      "canonical_evidence": "基于成对偏好的强化学习，提出马尔可夫决策竞赛新模型",
+      "llm_tldr_en": "Proposes Markov decision contest for RL with pairwise preferences, providing guarantees on Markov policy performance relative to history-dependent policies.",
+      "llm_tldr_cn": "该论文针对强化学习中成对偏好难以在长周期中有效使用的问题，提出马尔可夫决策竞赛（MDC）新模型。MDC允许使用历史依赖策略，并证明马尔可夫策略相对于历史依赖策略的性能保证。该方法提升了长周期偏好学习的效率，为强化学习算法在偏好设定下的理论基础得到拓展。",
+      "llm_tldr": "该论文针对强化学习中成对偏好难以在长周期中有效使用的问题，提出马尔可夫决策竞赛（MDC）新模型。MDC允许使用历史依赖策略，并证明马尔可夫策略相对于历史依赖策略的性能保证。该方法提升了长周期偏好学习的效率，为强化学习算法在偏好设定下的理论基础得到拓展。",
+      "llm_tags": [
+        "query:symbolic-reg"
+      ],
+      "matched_query_tag": "query:symbolic-reg",
+      "matched_query_text": "reinforcement learning algorithms and applications",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.02236v1",
+      "source": "arxiv",
+      "title": "Simultaneous Model-Based Evolution of Constants and Expression Structure in GP-GOMEA for Symbolic Regression",
+      "abstract": "Genetic programming (GP) approaches are among the state-of-the-art for symbolic regression, the task of constructing symbolic expressions that fit well with data. To find highly accurate symbolic expressions, both the expression structure and any contained real-valued constants, are important. GP-GOMEA, a modern model-based evolutionary algorithm, is one of the leading algorithms for finding accurate, yet compact expressions. Yet, GP-GOMEA does not perform dedicated constant optimization, but rather uses ephemeral random constants. Hence, the accuracy of GP-GOMEA may well still be improved upon by the incorporation of a constant optimization mechanism. Existing research into mixed discrete-continuous optimization with EAs has shown that a simultaneous and well-integrated approach to optimizing both discrete and continuous parts, leads to the best results on a variety of problems, especially when there are interactions between these parts. In this paper, we therefore propose a novel approach where constants in expressions are optimized at the same time as the expression structure by merging the real-valued variant of GOMEA with GP-GOMEA. The proposed approach is compared to other forms of handling constants in GP-GOMEA, and in the context of other commonly used techniques such as linear scaling, restarts, and constant tuning after GP optimization. Our results indicate that our novel approach generally performs best and confirms the importance of simultaneous constant optimization during evolution.",
+      "authors": [
+        "Johannes Koch",
+        "Tanja Alderliesten",
+        "Peter A. N. Bosman"
+      ],
+      "primary_category": "cs.NE",
+      "categories": [
+        "cs.NE"
+      ],
+      "published": "2026-06-01T13:29:30+00:00",
+      "link": "https://arxiv.org/pdf/2606.02236v1",
+      "tags": [
+        "keyword:symbolic-reg",
+        "query:symbolic-reg"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "symbolic regression with genetic programming and constant optimization",
+      "llm_evidence_cn": "符号回归的遗传编程与常数优化",
+      "llm_evidence": "符号回归的遗传编程与常数优化",
+      "canonical_evidence": "符号回归的遗传编程与常数优化",
+      "llm_tldr_en": "Enhances GP-GOMEA for symbolic regression by simultaneously evolving expression structure and constants, improving accuracy with mixed discrete-continuous optimization.",
+      "llm_tldr_cn": "针对符号回归中遗传编程算法GP-GOMEA未进行专用常数优化导致精度受限的问题，本文提出同时演化表达式结构和实值常数的方法。通过结合混合离散-连续优化机制，在不牺牲表达式紧凑性的前提下显著提高了拟合精度，在多个基准数据集上超越原算法。",
+      "llm_tldr": "针对符号回归中遗传编程算法GP-GOMEA未进行专用常数优化导致精度受限的问题，本文提出同时演化表达式结构和实值常数的方法。通过结合混合离散-连续优化机制，在不牺牲表达式紧凑性的前提下显著提高了拟合精度，在多个基准数据集上超越原算法。",
+      "llm_tags": [
+        "query:symbolic-reg"
+      ],
+      "matched_query_tag": "query:symbolic-reg",
+      "matched_query_text": "symbolic regression techniques and methods",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.03762v1",
+      "source": "arxiv",
+      "title": "Tool-Aware Optimization with Entropy Guidance for Efficient Agentic Reinforcement Learning",
+      "abstract": "Agentic reinforcement learning (RL) equips large language models (LLMs) with tool-use capabilities that substantially improve reasoning on complex tasks. However, integrating external tools often destabilizes training: over-reliance on tools can induce input distribution shift, while overly conservative tool use limits effective exploration. To address this issue, we propose a unified framework TAO-RL that couples tool-aware trajectory filtering with entropy-guided exploration for efficient policy optimization. Specifically, at the data level, TAO-RL filters rollout trajectories along two criteria: discarding those where all tool invocations fail to execute, and removing those where all rollouts are either correct or incorrect, as both cases yield degenerate advantage estimates that contribute no discriminative learning signal. This joint filtering retains data that are both tool-capable and informative, establishing a high-quality training distribution. At the algorithmic level, we introduce a tool-aware entropy-guided bonus that reshapes the advantage function at post-tool-call tokens, encouraging the policy to explore more diverse reasoning paths at critical decision points. These two components are mutually reinforcing: trajectory filtering establishes a clean and informative training foundation, while entropy-guided exploration drives stronger reasoning behaviors at critical tool-interaction junctures. Extensive experiments on 7 challenging reasoning benchmarks across 3 model scales demonstrate the superiority of TAO-RL over existing methods.",
+      "authors": [
+        "Hongye Cao",
+        "Nuo Yan",
+        "Haoyuan Deng",
+        "Ziwei Wang",
+        "Tianpei Yang",
+        "Jing Huo",
+        "Yuyao Zhang",
+        "Yang Gao"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-06-02T15:16:12+00:00",
+      "link": "https://arxiv.org/pdf/2606.03762v1",
+      "tags": [
+        "keyword:symbolic-reg",
+        "query:symbolic-reg"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "reinforcement learning with tool use and entropy guidance",
+      "llm_evidence_cn": "强化学习结合工具使用与熵引导",
+      "llm_evidence": "强化学习结合工具使用与熵引导",
+      "canonical_evidence": "强化学习结合工具使用与熵引导",
+      "llm_tldr_en": "Proposes TAO-RL, a unified RL framework for LLMs with tool-use that combines trajectory filtering and entropy-guided exploration for stable and efficient policy optimization.",
+      "llm_tldr_cn": "智能体强化学习整合工具使用时面临训练不稳定问题。本文提出TAO-RL框架，通过工具感知轨迹过滤和熵引导探索，有效平衡工具依赖与探索。在多个复杂推理任务上，TAO-RL显著提升策略效率和稳定性，为LLM工具增强学习了新方案。",
+      "llm_tldr": "智能体强化学习整合工具使用时面临训练不稳定问题。本文提出TAO-RL框架，通过工具感知轨迹过滤和熵引导探索，有效平衡工具依赖与探索。在多个复杂推理任务上，TAO-RL显著提升策略效率和稳定性，为LLM工具增强学习了新方案。",
+      "llm_tags": [
+        "query:symbolic-reg"
+      ],
+      "matched_query_tag": "query:symbolic-reg",
+      "matched_query_text": "reinforcement learning algorithms and applications",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.06007v1",
+      "source": "arxiv",
+      "title": "Diffusion Models for Adaptive Sequential Data Generation",
+      "abstract": "Generating realistic synthetic sequential data is critical in real-world applications across operations research, finance, healthcare, energy systems, and scientific computing, where time-indexed observations are used for prediction, simulation, risk assessment, and data-driven decision-making. While diffusion models have achieved remarkable success in generating static data, their direct extensions to sequential settings often fail to capture temporal dependence and information structure. Designing diffusion models that can simulate sequential data in an adapted manner, and hence without anticipation of future information, therefore remains an open challenge.   In this work, we propose a sequential forward-backward diffusion framework for adapted time series generation. Our approach progressively injects and removes noise along the sequence, conditioning on the previously generated history to ensure adaptiveness. A novel score-matching objective is introduced for efficient parallel training. We derive rigorous statistical guarantees under a generic framework, then establish score approximation, score estimation, and distribution estimation results with ReLU networks serving as a concrete instance. Empirically, we validate our method on synthetic data, including ARMA models and Gaussian processes, and demonstrate its effectiveness in constructing mean-variance optimal portfolios.",
+      "authors": [
+        "Haoyang Cao",
+        "Minshuo Chen",
+        "Yinbin Han",
+        "Renyuan Xu"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-06-04T10:59:24+00:00",
+      "link": "https://arxiv.org/pdf/2606.06007v1",
+      "tags": [
+        "keyword:symbolic-reg",
+        "query:symbolic-reg"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "proposes diffusion model for adaptive sequential data generation",
+      "llm_evidence_cn": "提出自适应序列数据生成的扩散模型",
+      "llm_evidence": "提出自适应序列数据生成的扩散模型",
+      "canonical_evidence": "提出自适应序列数据生成的扩散模型",
+      "llm_tldr_en": "Sequential forward-backward diffusion framework for adapted time series generation without anticipation of future information.",
+      "llm_tldr_cn": "现有扩散模型在静态数据上成功，但扩展到序列数据时难以捕捉时间依赖和信息结构。本文提出一种顺序前向-后向扩散框架，用于自适应时间序列生成，避免对未来信息的提前泄露。在金融、医疗等多个领域具有应用潜力。",
+      "llm_tldr": "现有扩散模型在静态数据上成功，但扩展到序列数据时难以捕捉时间依赖和信息结构。本文提出一种顺序前向-后向扩散框架，用于自适应时间序列生成，避免对未来信息的提前泄露。在金融、医疗等多个领域具有应用潜力。",
+      "llm_tags": [
+        "query:symbolic-reg"
+      ],
+      "matched_query_tag": "query:symbolic-reg",
+      "matched_query_text": "diffusion probabilistic models for generative tasks",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.30153v1",
+      "source": "arxiv",
+      "title": "Diffusion Models Are Statistically Optimal for Learning Low-Dimensional Multi-Modal Distributions",
+      "abstract": "Score-based diffusion models have demonstrated remarkable empirical success in learning high-dimensional distributions, particularly those exhibiting low-dimensional and multi-modal structures. However, theoretical understanding of their statistical efficiency remains limited. Existing theories typically rely on strong regularity assumptions, such as uniformly bounded densities or globally smooth score functions, which fail to capture such intrinsic structures. In this work, we study the sample complexity of diffusion models for learning distributions supported on a union of low-dimensional subspaces. Assuming that the data distribution within each subspace is subgaussian, we show that diffusion models require at most $\\widetilde{O}(\\varepsilon^{-k \\vee 2})$ samples to achieve $\\varepsilon$ error in 1-Wasserstein distance, where $k$ is the intrinsic dimension. This near-optimal convergence rate depends only on the intrinsic dimension and significantly improves upon prior theoretical guarantees that suffer from the curse of dimensionality. Notably, our analysis applies to a broad collection of distributions without imposing smoothness, bounded-density, or log-concavity assumptions. Overall, our results show that diffusion models can statistically adapt to intrinsic low-dimensional structure while naturally accommodating multi-modal data, offering a rigorous theoretical justification for their success in complex high-dimensional learning tasks.",
+      "authors": [
+        "Jingda Wu",
+        "Changxiao Cai"
+      ],
+      "primary_category": "stat.ML",
+      "categories": [
+        "stat.ML",
+        "cs.IT",
+        "cs.LG",
+        "math.ST"
+      ],
+      "published": "2026-05-28T16:13:44+00:00",
+      "link": "https://arxiv.org/pdf/2605.30153v1",
+      "tags": [
+        "keyword:symbolic-reg",
+        "query:symbolic-reg"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "theoretical analysis of diffusion models for low-dimensional multi-modal distributions",
+      "llm_evidence_cn": "扩散模型在低维多模态分布上的理论分析",
+      "llm_evidence": "扩散模型在低维多模态分布上的理论分析",
+      "canonical_evidence": "扩散模型在低维多模态分布上的理论分析",
+      "llm_tldr_en": "Proves diffusion models are statistically optimal for learning distributions on union of low-dimensional subspaces, requiring sample complexity independent of ambient dimension.",
+      "llm_tldr_cn": "扩散模型在低维多模态分布上表现优异但缺乏理论解释。本文证明当数据分布在低维子空间并集上时，扩散模型的样本复杂度与背景维度无关，并达到统计最优。这为扩散模型的结构化数据生成提供了理论保证。",
+      "llm_tldr": "扩散模型在低维多模态分布上表现优异但缺乏理论解释。本文证明当数据分布在低维子空间并集上时，扩散模型的样本复杂度与背景维度无关，并达到统计最优。这为扩散模型的结构化数据生成提供了理论保证。",
+      "llm_tags": [
+        "query:symbolic-reg"
+      ],
+      "matched_query_tag": "query:symbolic-reg",
+      "matched_query_text": "diffusion probabilistic models for generative tasks",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.04527v1",
+      "source": "arxiv",
+      "title": "Echo-Infinity: Learning Evolving Memory for Real-Time Infinite Video Generation",
+      "abstract": "We present Echo Infinity, an autoregressive (AR) framework towards real-time infinite video generation that employs a learnable evolving memory to dynamically filter, abstract, and compress any-length history at constant cost. Existing methods mainly curate memory with predefined KV-cache schedules, fixed-ratio heuristic compression, or inference-time RoPE adaptation. These designs inevitably lose historical information and amplify compounding errors due to their limited cache window and ignorance of autoregressive generation noise. Inspired by human memory consolidation, Echo-Infinity replaces handcrafted memory curation with learnable Memory Query, which are updated by attention and a gating mechanism when past frames are evicted from the local window. The queries are optimized end-to-end with the video diffusion transformers (DiTs), forming an evolving memory that supports arbitrary compression ratios with constant computation independent of video length. They also act as a generalizable generation prior, improving quality even when only the optimized initial state is used. We further introduce Unified Relative RoPE Recipe, which anchors the sink frames to start from id 0 and lets the newest frame id grow at most to the DiTs' pretrained maximum temporal RoPE id throughout training and inference, freeing the model from the finite RoPE constraint and closing the train-test RoPE extrapolation gap. In long and short video generation, Echo-Infinity achieves state-of-the-art performance, and, to our knowledge, demonstrates promising 24-hour (>1.3 M frames) real-time rollouts for the first time, suggesting a practical path toward infinite video generation.",
+      "authors": [
+        "Yuxuan Bian",
+        "Zeyue Xue",
+        "Songchun Zhang",
+        "Shiyi Zhang",
+        "Weiyang Jin",
+        "Yaowei Li",
+        "Junhao Zhuang",
+        "Haoran Li",
+        "Jie Huang",
+        "Haoyang Huang",
+        "Nan Duan",
+        "Qiang Xu"
+      ],
+      "primary_category": "cs.MM",
+      "categories": [
+        "cs.MM",
+        "cs.CV",
+        "cs.GR"
+      ],
+      "published": "2026-06-03T07:09:01+00:00",
+      "link": "https://arxiv.org/pdf/2606.04527v1",
+      "tags": [
+        "keyword:symbolic-reg"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "autoregressive transformer for video sequence generation",
+      "llm_evidence_cn": "用于视频序列生成的自回归Transformer",
+      "llm_evidence": "用于视频序列生成的自回归Transformer",
+      "canonical_evidence": "用于视频序列生成的自回归Transformer",
+      "llm_tldr_en": "Echo-Infinity proposes an autoregressive framework with learnable evolving memory for real-time infinite video generation, addressing memory limitations and compounding errors.",
+      "llm_tldr_cn": "针对现有视频生成方法中固定缓存窗口导致历史信息丢失和误差累积的问题，本文提出Echo-Infinity，一种基于可学习演化记忆的自回归框架。该方法通过注意力与门控机制动态筛选和压缩历史信息，实现常数成本的任意长度视频生成。实验表明，该框架在保持实时性的同时显著提升了长视频生成的连贯性和质量，为无限视频生成提供了新思路。",
+      "llm_tldr": "针对现有视频生成方法中固定缓存窗口导致历史信息丢失和误差累积的问题，本文提出Echo-Infinity，一种基于可学习演化记忆的自回归框架。该方法通过注意力与门控机制动态筛选和压缩历史信息，实现常数成本的任意长度视频生成。实验表明，该框架在保持实时性的同时显著提升了长视频生成的连贯性和质量，为无限视频生成提供了新思路。",
+      "llm_tags": [
+        "query:symbolic-reg"
+      ],
+      "matched_query_tag": "query:symbolic-reg",
+      "matched_query_text": "autoregressive transformer model for sequence generation",
+      "matched_requirement_id": "req-2",
+      "selection_source": "carryover_cache",
+      "paper_id": "2606.04527v1"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2605.30903v1",
+      "source": "arxiv",
+      "title": "Inverse Reinforcement Learning without an Optimal Demonstrator: A Feasible Reward Set Approach",
+      "abstract": "Inverse reinforcement learning (IRL) typically assumes demonstrations from a single optimal demonstrator, but in many applications data come from multiple imperfect demonstrators with heterogeneous suboptimality levels. We study reward learning in this setting through a feasible-reward-set framework: for each demonstrator, we encode its declared suboptimality level as a linear constraint and intersect the resulting feasible sets across demonstrators. Our theoretical analysis shows that the joint feasible set shrinks monotonically as data are added, and we give an exact characterization of when a new demonstrator strictly tightens it. We further establish two recovery guarantees for the feasible reward set of the ground-truth optimal demonstrator: one bound depends on closeness to the optimal occupancy, while the other requires only sufficient coverage and no near-optimal demonstrator. On the practical side, we introduce strategies to address the inherent reward ambiguity in the obtained reward set and provide an offline algorithm with function approximation for high-dimensional environments. Experiments in tabular grid-world and large language model (LLM) fine-tuning settings are consistent with the theoretical predictions and demonstrate the effectiveness of the proposed framework over baselines.",
+      "authors": [
+        "Kihyun Kim",
+        "Shripad Deshmukh",
+        "Nikos Vlassis",
+        "Jiawei Zhang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-05-29T06:38:10+00:00",
+      "link": "https://arxiv.org/pdf/2605.30903v1",
+      "tags": [
+        "keyword:symbolic-reg",
+        "query:symbolic-reg"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "inverse reinforcement learning",
+      "llm_evidence_cn": "逆强化学习",
+      "llm_evidence": "逆强化学习",
+      "canonical_evidence": "逆强化学习",
+      "llm_tldr_en": "Proposes a feasible-reward-set approach for IRL with multiple suboptimal demonstrators, providing theoretical guarantees for reward recovery.",
+      "llm_tldr_cn": "传统逆强化学习假设单一最优演示者，但实际数据来自多个次优演示者。本文提出可行奖励集框架，利用每个演示者的次优水平作为线性约束，通过交集收缩可行集，并提供理论保证。该方法能有效从异构次优演示中恢复奖励函数，拓展了IRL的实际适用范围。",
+      "llm_tldr": "传统逆强化学习假设单一最优演示者，但实际数据来自多个次优演示者。本文提出可行奖励集框架，利用每个演示者的次优水平作为线性约束，通过交集收缩可行集，并提供理论保证。该方法能有效从异构次优演示中恢复奖励函数，拓展了IRL的实际适用范围。",
+      "llm_tags": [
+        "query:symbolic-reg"
+      ],
+      "matched_query_tag": "query:symbolic-reg",
+      "matched_query_text": "reinforcement learning algorithms and applications",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2606.00183v1",
+      "source": "arxiv",
+      "title": "Agentic Transformers Provably Learn to Search via Reinforcement Learning",
+      "abstract": "Tree search is a central abstraction behind many language-agent reasoning and decision-making tasks: agents must explore actions, remember failures, and backtrack toward promising alternatives. Yet, we lack a theoretical understanding of how transformer-based policies acquire such search capabilities from the training dynamics of reinforcement learning (RL). We study this question in a stochastic $k$-ary tree environment, where an agentic transformer observes only its trajectory history through interaction and receives a terminal reward for reaching a hidden leaf goal node. We first construct a two-head transformer that implements randomized depth-first search (DFS): one head tracks previous actions, while the other detects failure outcomes and triggers backtracking. We then analyze the training dynamics of policy gradient under a depth-wise curriculum, showing that this same DFS mechanism emerges in stages from sparse reinforcement feedback without expert demonstrations. The resulting policy exhibits depth generalization: after training only on depth-$1$ and depth-$2$ trees, it succeeds on deeper full trees. We further show that, under imbalanced goal distributions, discounting the return leads to a ranked DFS policy that prioritizes higher-probability branches. Overall, our results identify a mechanistic normal form for transformer-based search, in which attention heads specialize and cooperate to extract decision-relevant traces from context and convert them into agentic action selection via RL training.",
+      "authors": [
+        "Tong Yang",
+        "Yu Huang",
+        "Yingbin Liang",
+        "Yuejie Chi"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "math.OC",
+        "stat.ML"
+      ],
+      "published": "2026-05-29T14:58:03+00:00",
+      "link": "https://arxiv.org/pdf/2606.00183v1",
+      "tags": [
+        "keyword:symbolic-reg",
+        "query:symbolic-reg"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "transformers learning search via reinforcement learning",
+      "llm_evidence_cn": "Transformer通过强化学习学会搜索",
+      "llm_evidence": "Transformer通过强化学习学会搜索",
+      "canonical_evidence": "Transformer通过强化学习学会搜索",
+      "llm_tldr_en": "Provides theoretical analysis of how transformer policies acquire tree search capabilities from RL training dynamics, constructing a two-head transformer that implements randomized DFS.",
+      "llm_tldr_cn": "针对Transformer策略如何从RL训练动力学中获得搜索能力缺乏理论理解的问题，本文在随机k叉树环境中进行理论分析，构造了一个双头Transformer实现随机深度优先搜索，并证明了RL训练可以收敛到该策略，揭示了注意力机制与RL反馈的结合机制。",
+      "llm_tldr": "针对Transformer策略如何从RL训练动力学中获得搜索能力缺乏理论理解的问题，本文在随机k叉树环境中进行理论分析，构造了一个双头Transformer实现随机深度优先搜索，并证明了RL训练可以收敛到该策略，揭示了注意力机制与RL反馈的结合机制。",
+      "llm_tags": [
+        "query:symbolic-reg"
+      ],
+      "matched_query_tag": "query:symbolic-reg",
+      "matched_query_text": "reinforcement learning algorithms and applications",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.30920v1",
+      "source": "arxiv",
+      "title": "Unsupervised Diffusion Solver for Combinatorial Optimization via Combinatorial Adjoint Matching",
+      "abstract": "Diffusion-based neural solvers have shown strong promise for combinatorial optimization (CO), but existing methods typically rely on supervised training with large collections of near-optimal solutions. In this work, we extend adjoint-based trajectory optimization methods to discrete combinatorial domains. We formulate diffusion-based CO as a stochastic control problem over Continuous-Time Markov Chains and introduce discrete adjoint dynamics for propagating optimization signals through discrete generative trajectories. Building on this formulation, we propose Combinatorial Adjoint Matching (CAM), an unsupervised training framework for discrete diffusion solvers with structured and low-variance trajectory-level optimization signals. Empirically, CAM consistently outperforms existing unsupervised diffusion baselines and achieves performance competitive with strong supervised diffusion solvers and even traditional solvers across diverse combinatorial optimization problems. Our code is available at https://github.com/Shengyu-Feng/CAM.",
+      "authors": [
+        "Shengyu Feng",
+        "Tarun Suresh",
+        "Yiming Yang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-05-29T07:04:42+00:00",
+      "link": "https://arxiv.org/pdf/2605.30920v1",
+      "tags": [
+        "keyword:symbolic-reg",
+        "query:symbolic-reg"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "diffusion model for combinatorial optimization, unsupervised training",
+      "llm_evidence_cn": "用于组合优化的扩散模型，无监督训练",
+      "llm_evidence": "用于组合优化的扩散模型，无监督训练",
+      "canonical_evidence": "用于组合优化的扩散模型，无监督训练",
+      "llm_tldr_en": "Extends adjoint-based trajectory optimization to discrete combinatorial domains, introducing unsupervised diffusion solver CAM with structured optimization signals.",
+      "llm_tldr_cn": "针对扩散神经求解器依赖监督训练的问题，本文将伴随轨迹优化方法推广至离散组合域，提出无监督训练框架CAM。该方法将扩散组合优化建模为连续时间马尔可夫链上的随机控制问题，引入离散伴随动力学传播优化信号，实现了低方差的结构化训练。",
+      "llm_tldr": "针对扩散神经求解器依赖监督训练的问题，本文将伴随轨迹优化方法推广至离散组合域，提出无监督训练框架CAM。该方法将扩散组合优化建模为连续时间马尔可夫链上的随机控制问题，引入离散伴随动力学传播优化信号，实现了低方差的结构化训练。",
+      "llm_tags": [
+        "query:symbolic-reg"
+      ],
+      "matched_query_tag": "query:symbolic-reg",
+      "matched_query_text": "diffusion probabilistic models for generative tasks",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.00336v1",
+      "source": "arxiv",
+      "title": "From Noise to Control: Parameterized Diffusion Policies",
+      "abstract": "We propose Parameterized Diffusion Policy (PDP), a framework for learning diffusion policies conditioned on low-dimensional, continuous parameters embedded in a learned behavior manifold. By constructing this manifold so that distances between latent representations reflect the semantic similarity between physical trajectories, we transform diffusion from a mechanism for stochastic diversity into a precise and optimizable tool for behavior steering. Our approach enables smooth interpolation between known strategies and efficient adaptation to novel constraints without updating policy weights. We demonstrate that PDP significantly improves adaptation performance on complex multimodal benchmarks in both simulated and real-robot experiments compared to standard diffusion policies, particularly in scenarios requiring the synthesis of novel behaviors.",
+      "authors": [
+        "Renhao Zhang",
+        "Haotian Fu",
+        "Mingxi Jia",
+        "George Konidaris",
+        "Yilun Du",
+        "Bruno Castro da Silva"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.LG"
+      ],
+      "published": "2026-05-29T20:21:50+00:00",
+      "link": "https://arxiv.org/pdf/2606.00336v1",
+      "tags": [
+        "keyword:symbolic-reg",
+        "query:symbolic-reg"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "diffusion policies for control",
+      "llm_evidence_cn": "用于控制的扩散策略",
+      "llm_evidence": "用于控制的扩散策略",
+      "canonical_evidence": "用于控制的扩散策略",
+      "llm_tldr_en": "Parameterized Diffusion Policy (PDP) learns a behavior manifold for precise steering of diffusion-based policies, enabling smooth interpolation and adaptation without retraining.",
+      "llm_tldr_cn": "扩散策略通常用于随机多样性生成，难以精确控制行为。本文提出参数化扩散策略（PDP），通过学习低维连续参数嵌入的行为流形，将扩散模型转化为可优化工具，实现策略的平滑插值与适应。在机器人多模态基准上，PDP显著提升了适应性能，展示了扩散模型在行为引导中的巨大潜力。",
+      "llm_tldr": "扩散策略通常用于随机多样性生成，难以精确控制行为。本文提出参数化扩散策略（PDP），通过学习低维连续参数嵌入的行为流形，将扩散模型转化为可优化工具，实现策略的平滑插值与适应。在机器人多模态基准上，PDP显著提升了适应性能，展示了扩散模型在行为引导中的巨大潜力。",
+      "llm_tags": [
+        "query:symbolic-reg"
+      ],
+      "matched_query_tag": "query:symbolic-reg",
+      "matched_query_text": "diffusion probabilistic models for generative tasks",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2606.00295v1",
+      "source": "arxiv",
+      "title": "Adaptive Order Policies for Masked Diffusion",
+      "abstract": "Masked diffusion models have seen great success in capturing data distributions over discrete sequences in domains such as text and proteins. These models generate data by iteratively unmasking tokens starting from a fully masked sequence, with the unmasking order typically chosen at random or using a heuristic based on denoiser probabilities. In this work, we propose a scheme for learning the unmasking order using an additional lightweight policy network on top of a diffusion model. Our proposed loss reweights terms in the masked diffusion loss according to policy probabilities, and results in a policy that prefers positions where the denoiser is more likely to be correct. We study this loss in two settings: (i) training solely the policy while using a frozen pre-trained denoiser, and (ii) training the policy and denoiser jointly with the weighted loss to allow for mutual adaptation. We demonstrate that our approach outperforms common heuristics on problems that are sensitive to token ordering, such as combinatorial tasks and proteins.",
+      "authors": [
+        "Jama Hussein Mohamud",
+        "Mohsin Hasan",
+        "Mirco Ravanelli",
+        "Yoshua Bengio"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-05-29T19:26:53+00:00",
+      "link": "https://arxiv.org/pdf/2606.00295v1",
+      "tags": [
+        "keyword:symbolic-reg",
+        "query:symbolic-reg"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "learning unmasking order in masked diffusion models",
+      "llm_evidence_cn": "学习掩码扩散模型的解掩码顺序",
+      "llm_evidence": "学习掩码扩散模型的解掩码顺序",
+      "canonical_evidence": "学习掩码扩散模型的解掩码顺序",
+      "llm_tldr_en": "Proposes a policy network to learn the unmasking order for masked diffusion models, reweighting the diffusion loss to favor positions where the denoiser is confident, improving sample quality.",
+      "llm_tldr_cn": "掩码扩散模型通常使用固定或随机解掩码顺序，可能次优。本文提出用轻量策略网络学习解掩码顺序，通过重新加权扩散损失使策略偏好去噪器更确定的位点。在文本和蛋白质序列生成上，学习顺序比随机顺序显著提升质量，展示了自适应顺序的价值。",
+      "llm_tldr": "掩码扩散模型通常使用固定或随机解掩码顺序，可能次优。本文提出用轻量策略网络学习解掩码顺序，通过重新加权扩散损失使策略偏好去噪器更确定的位点。在文本和蛋白质序列生成上，学习顺序比随机顺序显著提升质量，展示了自适应顺序的价值。",
+      "llm_tags": [
+        "query:symbolic-reg"
+      ],
+      "matched_query_tag": "query:symbolic-reg",
+      "matched_query_text": "diffusion probabilistic models for generative tasks",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.31172v1",
+      "source": "arxiv",
+      "title": "Convergence of Two-Timescale Markovian Stochastic Approximations with Applications in Reinforcement Learning",
+      "abstract": "This work studies the convergence of two-timescale stochastic approximations (SA), a class of iterative algorithms that update two sets of parameters in fast and slow timescales respectively. Notable examples of two-timescale SA in reinforcement learning (RL) include temporal difference learning with gradient correction (TDC) and actor-critic methods. Previously, the stability (i.e., boundedness) and convergence of two-timescale SA were only established under i.i.d. noise. This work instead establishes the stability and convergence of two-timescale SA under Markovian noise, a setup that is more realistic in RL. Notably, we do not need to use any projection operator and the noise does not need to live in a compact space. Our key technical novelty is to control the fast timescale parameter with the running max of the slow timescale parameter, instead of with the current slow timescale parameter, as most prior works do. As a key application, we establish the first almost sure convergence of TDC with eligibility traces under off-policy learning with linear function approximation.",
+      "authors": [
+        "Vagul Mahadevan",
+        "Claire Chen",
+        "Shuze Daniel Liu",
+        "Shangtong Zhang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "stat.ML"
+      ],
+      "published": "2026-05-29T11:37:07+00:00",
+      "link": "https://arxiv.org/pdf/2605.31172v1",
+      "tags": [
+        "keyword:symbolic-reg",
+        "query:symbolic-reg"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "theoretical work on convergence of two-timescale SA with applications to RL",
+      "llm_evidence_cn": "关于双时间尺度随机近似收敛性的理论工作，应用于强化学习",
+      "llm_evidence": "关于双时间尺度随机近似收敛性的理论工作，应用于强化学习",
+      "canonical_evidence": "关于双时间尺度随机近似收敛性的理论工作，应用于强化学习",
+      "llm_tldr_en": "Establishes stability and convergence of two-timescale stochastic approximation under Markovian noise, with direct applications to RL algorithms like TDC and actor-critic.",
+      "llm_tldr_cn": "针对双时间尺度随机近似在强化学习中使用时面临马尔可夫噪声的问题，首次在马尔可夫噪声下证明了其有界性和收敛性，无需投影算子，为TDC和演员-评论家等算法提供了理论基础。",
+      "llm_tldr": "针对双时间尺度随机近似在强化学习中使用时面临马尔可夫噪声的问题，首次在马尔可夫噪声下证明了其有界性和收敛性，无需投影算子，为TDC和演员-评论家等算法提供了理论基础。",
+      "llm_tags": [
+        "query:symbolic-reg"
+      ],
+      "matched_query_tag": "query:symbolic-reg",
+      "matched_query_text": "reinforcement learning algorithms and applications",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.00837v1",
+      "source": "arxiv",
+      "title": "Coarse-to-Fine Compositional Diffusion for Long-Horizon Planning",
+      "abstract": "Diffusion models provide strong priors for generating structured data, but many tasks require outputs beyond the scale on which these models are typically trained. Compositional generation addresses this by composing overlapping local plans from a pretrained short-horizon prior into a long-horizon output. However, standard composition primarily enforces agreement between neighboring local plans, yielding local consistency without directly specifying the global structure of the full composition. As a result, locally compatible plans may still form an implausible route, task sequence, or temporal evolution. Existing methods improve global coherence by repeatedly propagating local consistency signals or by adding inference-time optimization, but these procedures become expensive as the number or dimensionality of local plans increases. We propose Coarse-to-Fine Compositional Diffusion (CoFi), an inference-time sampler that separates global structure formation from local detail refinement. CoFi first aligns local denoised estimates around a shared coarse structure, producing a global scaffold that captures the long-range task-level arrangement. It then diffuses this scaffold to an intermediate noise level and denoises it with the same pretrained local prior, restoring local fine structure while preserving the scaffold-induced global coherence. Across long-horizon robotic planning, panoramic image generation, and long video generation, CoFi not only improves both global coherence and local sample quality over prior compositional baselines, but also requires 2-8x fewer denoiser evaluations.",
+      "authors": [
+        "Byoungwoo Park",
+        "Utkarsh A. Mishra",
+        "Jaemoo Choi",
+        "Juho Lee",
+        "Yongxin Chen"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.LG"
+      ],
+      "published": "2026-05-30T18:26:53+00:00",
+      "link": "https://arxiv.org/pdf/2606.00837v1",
+      "tags": [
+        "keyword:symbolic-reg",
+        "query:symbolic-reg"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "compositional diffusion for long-horizon planning",
+      "llm_evidence_cn": "组合扩散用于长时域规划",
+      "llm_evidence": "组合扩散用于长时域规划",
+      "canonical_evidence": "组合扩散用于长时域规划",
+      "llm_tldr_en": "Proposes coarse-to-fine compositional diffusion that uses a global structural prior to improve long-horizon planning over standard local composition.",
+      "llm_tldr_cn": "扩散模型生成结构化数据，但难以扩展至长时域。现有组合方法仅强调局部一致性，缺乏全局结构。本文提出粗细组合扩散，引入全局结构先验，在确保局部一致的同时指导全局计划生成。实验表明该方法在多个规划任务中生成更合理的长时域计划，优于局部组合方法。",
+      "llm_tldr": "扩散模型生成结构化数据，但难以扩展至长时域。现有组合方法仅强调局部一致性，缺乏全局结构。本文提出粗细组合扩散，引入全局结构先验，在确保局部一致的同时指导全局计划生成。实验表明该方法在多个规划任务中生成更合理的长时域计划，优于局部组合方法。",
+      "llm_tags": [
+        "query:symbolic-reg"
+      ],
+      "matched_query_tag": "query:symbolic-reg",
+      "matched_query_text": "diffusion probabilistic models for generative tasks",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2606.00395v1",
+      "source": "arxiv",
+      "title": "PR2: Predictive Routing Replay for MoE-Based LLM Reinforcement Learning",
+      "abstract": "Mixture of Experts (MoE) Large Language Models (LLMs) achieve strong performance at scale. However, reinforcement learning (RL) on MoE-based LLMs often suffers from training instability. A root cause is router drift, i.e., expert activations can change drastically across model updates and differ between disaggregated rollout and training phases, causing large rollout--training mismatch and unstable importance sampling weights in PPO-style RL algorithms. Routing replay mitigates this issue by freezing the replay route within each reasoning trajectory, but it ignores how the router evolves under off-policy updates and thus causes router staleness. To address this limitation, we propose Predictive Routing Replay (PR2), which augments each router with a lightweight evolution predictor that learns to anticipate short-horizon router evolution. During the rollout phase, we use the predictive routing distribution to apply top-$k$ routing, enabling gradients to reach experts that are likely to become active after updates. During the training phase, we replay the resulting predicted route to retain consistency for stable importance estimation. Theoretical analysis and experiments support that PR2 reduces routing-induced mismatch, improves RL stability, and yields stronger performance across various reasoning benchmarks.",
+      "authors": [
+        "Daize Dong",
+        "Junlin Chen",
+        "Haolong Jia",
+        "Jiawei Wu",
+        "Huanwei Di",
+        "Jiang Liu",
+        "Jialian Wu",
+        "Zhengzhong Liu",
+        "Zicheng Liu",
+        "Emad Barsoum",
+        "Dimitris N. Metaxas",
+        "Hongyi Wang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-05-29T22:28:08+00:00",
+      "link": "https://arxiv.org/pdf/2606.00395v1",
+      "tags": [
+        "keyword:symbolic-reg",
+        "query:symbolic-reg"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "addresses training instability in RL for MoE-based LLMs",
+      "llm_evidence_cn": "解决基于MoE的LLM在强化学习中的训练不稳定问题",
+      "llm_evidence": "解决基于MoE的LLM在强化学习中的训练不稳定问题",
+      "canonical_evidence": "解决基于MoE的LLM在强化学习中的训练不稳定问题",
+      "llm_tldr_en": "Proposes PR2 for MoE-based LLM RL, using predictive routing replay to mitigate router drift and stabilize PPO training.",
+      "llm_tldr_cn": "针对混合专家大语言模型强化学习中路由器漂移导致的训练不稳定，提出PR2方法，通过预测路由回放更新路由器，减小rollout与训练阶段不匹配，提升PPO训练稳定性。",
+      "llm_tldr": "针对混合专家大语言模型强化学习中路由器漂移导致的训练不稳定，提出PR2方法，通过预测路由回放更新路由器，减小rollout与训练阶段不匹配，提升PPO训练稳定性。",
+      "llm_tags": [
+        "query:symbolic-reg"
+      ],
+      "matched_query_tag": "query:symbolic-reg",
+      "matched_query_text": "reinforcement learning algorithms and applications",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.00395v2",
+      "source": "arxiv",
+      "title": "PR2: Predictive Routing Replay for MoE-Based LLM Reinforcement Learning",
+      "abstract": "Mixture of Experts (MoE) Large Language Models (LLMs) achieve strong performance at scale. However, reinforcement learning (RL) on MoE-based LLMs often suffers from training instability. A root cause is router drift, i.e., expert activations can change drastically across model updates and differ between disaggregated rollout and training phases, causing large rollout--training mismatch and unstable importance sampling weights in PPO-style RL algorithms. Routing replay mitigates this issue by freezing the replay route within each reasoning trajectory, but it ignores how the router evolves under off-policy updates and thus causes router staleness. To address this limitation, we propose Predictive Routing Replay (PR2), which augments each router with a lightweight evolution predictor that learns to anticipate short-horizon router evolution. During the rollout phase, we use the predictive routing distribution to apply top-$k$ routing, enabling gradients to reach experts that are likely to become active after updates. During the training phase, we replay the resulting predicted route to retain consistency for stable importance estimation. Theoretical analysis and experiments support that PR2 reduces routing-induced mismatch, improves RL stability, and yields stronger performance across various reasoning benchmarks.",
+      "authors": [
+        "Daize Dong",
+        "Junlin Chen",
+        "Haolong Jia",
+        "Jiang Liu",
+        "Jiawei Wu",
+        "Huanwei Di",
+        "Jialian Wu",
+        "Zhengzhong Liu",
+        "Zicheng Liu",
+        "Emad Barsoum",
+        "Dimitris N. Metaxas",
+        "Hongyi Wang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-05-29T22:28:08+00:00",
+      "link": "https://arxiv.org/pdf/2606.00395v2",
+      "tags": [
+        "keyword:symbolic-reg",
+        "query:symbolic-reg"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "reinforcement learning on MoE LLMs with routing replay",
+      "llm_evidence_cn": "MoE大语言模型上的强化学习路由重放",
+      "llm_evidence": "MoE大语言模型上的强化学习路由重放",
+      "canonical_evidence": "MoE大语言模型上的强化学习路由重放",
+      "llm_tldr_en": "Proposes PR2, augmenting routers with predictive replay to reduce rollout-training mismatch and stabilize PPO on MoE LLMs.",
+      "llm_tldr_cn": "该论文分析了MoE大语言模型强化学习中路由器漂移导致的不稳定性，提出预测性路由重放（PR2），为每个路由器配备预测性更新以缓解离线策略下的路由陈旧问题。PR2减少了展开与训练阶段的路由不匹配，稳定了PPO风格算法的训练。为大规模MoE模型的RL训练提供了有效解决方案。",
+      "llm_tldr": "该论文分析了MoE大语言模型强化学习中路由器漂移导致的不稳定性，提出预测性路由重放（PR2），为每个路由器配备预测性更新以缓解离线策略下的路由陈旧问题。PR2减少了展开与训练阶段的路由不匹配，稳定了PPO风格算法的训练。为大规模MoE模型的RL训练提供了有效解决方案。",
+      "llm_tags": [
+        "query:symbolic-reg"
+      ],
+      "matched_query_tag": "query:symbolic-reg",
+      "matched_query_text": "reinforcement learning algorithms and applications",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.00838v1",
+      "source": "arxiv",
+      "title": "Decoupled Behavioral Cloning for Scalable Inductive Generalization in RL from Specifications",
+      "abstract": "Inductive generalization is a framework for reinforcement learning (RL) generalization in which inductively related task instances admit inductively related policies. Prior work captures this structure via a higher-order policy-evolution function learned directly with RL, but suffers from poor training scalability: as training tasks grow, aggregated reward feedback becomes noisy and conflicting, destabilizing training and weakening generalization. We propose DIBS, a decoupled behavioral cloning approach that separates learning task-specific policies from learning the evolution function. We first learn individual teacher policies per task via standard RL, then fit the evolution function via behavioral cloning on teacher-labeled state-action pairs. This replaces noisy reward aggregation with dense, stable supervision. DIBS achieves significant improvements in both training stability and zero-shot generalization against existing RL and meta-RL algorithms.",
+      "authors": [
+        "Vignesh Subramanian",
+        "Subhajit Roy",
+        "Suguman Bansal"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-05-30T18:26:59+00:00",
+      "link": "https://arxiv.org/pdf/2606.00838v1",
+      "tags": [
+        "keyword:symbolic-reg",
+        "query:symbolic-reg"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "reinforcement learning generalization via decoupled behavioral cloning",
+      "llm_evidence_cn": "通过解耦行为克隆实现强化学习泛化",
+      "llm_evidence": "通过解耦行为克隆实现强化学习泛化",
+      "canonical_evidence": "通过解耦行为克隆实现强化学习泛化",
+      "llm_tldr_en": "DIBS addresses training instability in RL generalization by separately learning per-task teacher policies via standard RL and then fitting the policy-evolution function through behavioral cloning, achieving better in- and out-of-distribution success.",
+      "llm_tldr_cn": "现有强化学习归纳泛化方法直接学习策略演化函数，随着任务增多奖励反馈变得嘈杂并冲突。本文提出DIBS，先独立学习每个任务的教师策略，再通过行为克隆拟合演化函数，从而分离任务策略学习与演化学习。在ALFWorld等基准中，DIBS显著提升了分布内和分布外成功率，并且训练更加稳定可扩展。该方法为RL泛化提供了一种高效解耦框架。",
+      "llm_tldr": "现有强化学习归纳泛化方法直接学习策略演化函数，随着任务增多奖励反馈变得嘈杂并冲突。本文提出DIBS，先独立学习每个任务的教师策略，再通过行为克隆拟合演化函数，从而分离任务策略学习与演化学习。在ALFWorld等基准中，DIBS显著提升了分布内和分布外成功率，并且训练更加稳定可扩展。该方法为RL泛化提供了一种高效解耦框架。",
+      "llm_tags": [
+        "query:symbolic-reg"
+      ],
+      "matched_query_tag": "query:symbolic-reg",
+      "matched_query_text": "reinforcement learning algorithms and applications",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2606.00469v1",
+      "source": "arxiv",
+      "title": "Constructive interpolation and generalization rates for neural ODEs: a control perspective",
+      "abstract": "We study supervised regression with neural ODEs (NODEs) from a control-theoretic perspective to derive explicit population-risk bounds. We focus on a widely used class of non-autonomous models with constant parameters and explicit time dependence, which we call semi-autonomous NODEs (SA-NODEs). We constructively prove that SA-NODEs are capable of \\emph{exact} interpolation of admissible finite datasets, and even satisfy a stronger property that we call \\emph{simultaneous cell controllability} (SCC): their flows can map prescribed disjoint cells into arbitrarily small target balls. This property is the mechanism that upgrades interpolation into quantitative generalization, by allowing SA-NODEs to emulate piecewise-constant nonparametric estimators. Consequently, our risk bounds recover the rates of histogram and nearest-neighbor estimators, provided the network width satisfies a conservative scaling with the sample size. Numerical experiments show that trained SA-NODEs achieve competitive -- often lower -- test errors than these baselines. Finally, we show that the explicit time dependence is essential. Although two-layer autonomous NODEs can interpolate geometrically nondegenerate datasets, structural obstructions prevent them from achieving SCC. These limitations, further confirmed numerically, support the view that SA-NODEs provide a minimal effective architecture for learning.",
+      "authors": [
+        "Antonio Álvarez-López",
+        "Lorenzo Liverani",
+        "Enrique Zuazua"
+      ],
+      "primary_category": "math.OC",
+      "categories": [
+        "math.OC",
+        "stat.ML"
+      ],
+      "published": "2026-05-30T01:26:36+00:00",
+      "link": "https://arxiv.org/pdf/2606.00469v1",
+      "tags": [
+        "keyword:symbolic-reg",
+        "query:symbolic-reg"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "neural ODEs as continuous-time dynamical systems, related to liquid neural networks",
+      "llm_evidence_cn": "神经ODE作为连续时间动力学系统，与液态神经网络相关",
+      "llm_evidence": "神经ODE作为连续时间动力学系统，与液态神经网络相关",
+      "canonical_evidence": "神经ODE作为连续时间动力学系统，与液态神经网络相关",
+      "llm_tldr_en": "This work provides constructive interpolation guarantees and generalization rates for neural ODEs via control theory, proving semi-autonomous NODEs achieve exact interpolation and simultaneous cell controllability.",
+      "llm_tldr_cn": "本文从控制理论角度研究神经ODE的回归泛化。我们证明半自主神经ODE（SA-NODE）具有精确插值性质和同时细胞可控性，其流可将指定不相交单元映射到任意小目标球。这一机制将插值转化为定量泛化，使SA-NODE能够模拟分段常数非参数函数。我们推导了显式的总体风险界，为神经ODE在监督学习中的应用提供了理论基础。",
+      "llm_tldr": "本文从控制理论角度研究神经ODE的回归泛化。我们证明半自主神经ODE（SA-NODE）具有精确插值性质和同时细胞可控性，其流可将指定不相交单元映射到任意小目标球。这一机制将插值转化为定量泛化，使SA-NODE能够模拟分段常数非参数函数。我们推导了显式的总体风险界，为神经ODE在监督学习中的应用提供了理论基础。",
+      "llm_tags": [
+        "query:symbolic-reg"
+      ],
+      "matched_query_tag": "query:symbolic-reg",
+      "matched_query_text": "liquid neural network continuous time dynamical systems",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

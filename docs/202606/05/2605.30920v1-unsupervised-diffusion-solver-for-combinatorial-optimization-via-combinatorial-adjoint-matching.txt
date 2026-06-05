@@ -1,0 +1,1146 @@
+Title: Unsupervised Diffusion Solver for Combinatorial Optimization via Combinatorial Adjoint Matching
+
+URL Source: https://arxiv.org/pdf/2605.30920v1
+
+Published Time: Mon, 01 Jun 2026 00:44:22 GMT
+
+Number of Pages: 20
+
+Markdown Content:
+# Unsupervised Diffusion Solver for Combinatorial Optimization via Combinatorial Adjoint Matching 
+
+Shengyu Feng 1 Tarun Suresh 2 Yiming Yang 1
+
+# Abstract 
+
+Diffusion-based neural solvers have shown strong promise for combinatorial optimization (CO), but existing methods typically rely on supervised training with large collections of near-optimal so-lutions. In this work, we extend adjoint-based trajectory optimization methods to discrete com-binatorial domains. We formulate diffusion-based CO as a stochastic control problem over Continuous-Time Markov Chains and introduce discrete adjoint dynamics for propagating opti-mization signals through discrete generative tra-jectories. Building on this formulation, we pro-pose Combinatorial Adjoint Matching (CAM) , an unsupervised training framework for discrete dif-fusion solvers with structured and low-variance trajectory-level optimization signals. Empirically, CAM consistently outperforms existing unsuper-vised diffusion baselines and achieves perfor-mance competitive with strong supervised diffu-sion solvers and even traditional solvers across diverse combinatorial optimization problems. Our code is available at https://github.com/ Shengyu-Feng/CAM .
+
+# 1. Introduction 
+
+Combinatorial optimization (CO) aims to find optimal solu-tions over discrete and structured decision spaces and is a central topic in computer science, with applications includ-ing scheduling, routing, and network design (Korte & Vy-gen, 2012). Owing to their discrete and highly non-convex nature, many CO problems lack efficient exact solvers, and state-of-the-art (SOTA) performance often relies on care-fully engineered heuristics that require substantial domain knowledge and manual effort. 
+
+> 1
+
+Language Technologies Institute, Carnegie Mellon University 
+
+> 2
+
+University of Illinois Urbana-Champaign. Correspondence to: Shengyu Feng <shengyuf@cs.cmu.edu >.
+
+Proceedings of the 43 rd International Conference on Machine Learning , Seoul, South Korea. PMLR 306, 2026. Copyright 2026 by the author(s). 
+
+Recent progress in diffusion models (Ho et al., 2020) has led to promising advances in machine-learning-based ap-proaches for CO (Sun & Yang, 2023; Li et al., 2023; Feng et al., 2025). In contrast to one-shot generation meth-ods (Joshi et al., 2019), diffusion models construct solu-tions through a multi-step stochastic process, allowing them to better represent multi-modal distributions and partially smooth the highly non-convex optimization landscape of CO problems. However, most existing diffusion-based CO solvers rely on supervised training with large collections of near-optimal solutions. This requirement substantially limits their applicability, particularly for problem settings where high-quality solutions are expensive or impractical to obtain. Consequently, developing unsupervised train-ing methods for diffusion-based CO solvers has become an important research direction. Several recent works have explored unsupervised diffu-sion training for CO. DiffUCO (Sanokowski et al., 2024) formulates diffusion training as an entropy-regularized re-inforcement learning (RL) problem. While principled, this approach requires propagating terminal rewards back-ward through intermediate diffusion steps via policy gra-dients, resulting in high variance and poor scalability. SDDS (Sanokowski et al., 2025) alleviates this issue by con-verting the RL objective into a supervised diffusion-style loss using importance sampling from the model itself; how-ever, the variance introduced by importance weights still poses significant challenges. More recently, RLNN (Feng & Yang, 2025) proposes a fully local training objective by interpreting diffusion as a regularized Langevin dynamics. Although this formulation improves stability, its local nature limits the model’s ability to capture long-term dependencies and may lead to suboptimal global solutions. In parallel, adjoint methods (Pontryagin et al., 1962) have become a fundamental tool for trajectory optimization in continuous dynamical systems, including diffusion-based generative modeling (Domingo-Enrich et al., 2024; 2025). Existing RL-based approaches primarily rely on propagating scalar rewards through trajectories, often requiring exten-sive sampling to reduce variance and assess relative action quality. In contrast, adjoint-based methods compute path gradients through backward propagation along the trajec-1
+
+> arXiv:2605.30920v1 [cs.LG] 29 May 2026 Combinatorial Adjoint Matching
+
+tory, providing low-variance guidance on how intermediate controls should be adjusted to improve the final outcome. However, extending such trajectory-level optimization prin-ciples to discrete combinatorial domains remains highly challenging due to the absence of differentiable state transi-tions and the fundamentally discrete nature of combinatorial solution spaces. These challenges therefore motivate the following question: 
+
+How can adjoint-based trajectory optimization methods be adapted to discrete generative processes for combinatorial optimization? 
+
+To address this question, we develop a principled frame-work for adjoint-based optimization in discrete combina-torial domains. We formulate diffusion-based combinato-rial optimization as a stochastic optimal control problem over Continuous-Time Markov Chains (CTMCs) (Ander-son, 2012), enabling trajectory optimization in discrete state spaces. Building on this formulation, we introduce discrete adjoint dynamics and establish conditions under which trajectory-level optimization signals can be propa-gated through discrete generative processes. These com-ponents together yield Combinatorial Adjoint Matching (CAM) , an unsupervised training framework for discrete diffusion solvers with path-gradient optimization signals. Unlike prior unsupervised diffusion approaches that rely on dense reward estimation or importance-weighted sampling, CAM utilizes informative terminal improvement signals to guide intermediate diffusion dynamics during training. As a result, CAM substantially reduces the amount of environ-ment feedback required during training while improving optimization stability and inference-time scaling behavior. We evaluate CAM on a diverse set of CO problems, includ-ing Maximum Independent Set (MIS), Traveling Salesman Problem (TSP), Maximum Cut, and Capacitated Vehicle Routing Problem (CVRP). Across these tasks, CAM consis-tently outperforms existing unsupervised diffusion baselines and achieves performance competitive with strong super-vised diffusion solvers and even traditional heuristic solvers. Overall, our results highlight adjoint-based trajectory op-timization as a promising direction for scalable and data-efficient neural combinatorial optimization. 
+
+# 2. Preliminaries 
+
+2.1. Problem Statement: Combinatorial Optimization 
+
+We formulate a combinatorial optimization (CO) problem as the following constrained optimization problem: 
+
+min 
+
+> x∈{ 0,1}N
+
+a(x) s.t. b(x) = 0 , (1) where a(x) denotes the objective to be optimized (e.g., the negative set size in Maximum Independent Set), and 
+
+b(x) ≥ 0 measures the degree of constraint violation (e.g., the number of adjacent selected nodes). Without loss of generality, we consider minimization problems; any maxi-mization problem can be converted into this form. In practice, neural solvers may produce infeasible solutions. We therefore assume the existence of a surrogate objective function g : {0, 1}N → R that assigns a cost to any candi-date solution and is consistent with the original optimization problem in the sense that 
+
+x⋆ ∈ arg min 
+
+> x∈{ 0,1}N
+
+g(x)
+
+⇒ x⋆ ∈ arg min 
+
+> x∈{ 0,1}N
+
+a(x) s.t. b(x) = 0 . (2) For instance, g can be defined as a penalty-based objective 
+
+g(x) := a(x) + βb (x) for a sufficiently large β, or as the evaluation of solution quality after post-processing neural outputs via greedy decoding. 
+
+2.2. Continuous-Time Markov Chain 
+
+In the discrete domain, we model the generative process as a Continuous-Time Markov chain (CTMC) (Anderson, 2012) over a finite state space X (e.g., {0, 1}N for CO). Let 
+
+Xt ∈ X denote the state at time t ∈ [0 , 1] . The dynamics are characterized by transition rates ut(x′, x), which specify the infinitesimal transition probability to x′̸ = x at time t:
+
+ut(x′, x) = lim 
+
+> ∆t→0
+
+P(Xt+∆ t = x′ | Xt = x)∆t , (3) while ut(x, x) = − P 
+
+> x′
+
+ut(x′, x). In this work, we restrict 
+
+x′ to the 1-Hamming neighborhood of x and we use x(i) to represent the state obtained by flipping the i-th coordinate of x.Given an initial distribution and transition rates, the CTMC induces a trajectory distribution over paths X = ( Xt)t∈[0 ,1] .We denote by pbase (X) a reference process (Kappen, 2005), which serves as a prior over trajectories. A controlled pro-cess pu(X) is obtained by modifying these transition rates through a controlled policy u, resulting in a new trajectory distribution in the same state space. 
+
+2.3. Stochastic Optimal Control 
+
+Based on the CTMC formulation above, we formulate the stochastic optimal control (SOC) (Hammer, 1958; Fleming & Rishel, 1975; Sethi & Thompson, 2000) as: 
+
+min  
+
+> u
+
+Epu
+
+h
+
+g(X1)
+
+i
+
++ τ KL  pu(X) ∥ pbase (X). (4) Here, g(X1) is the terminal objective as in the CO formu-lation, and the KL term regularizes the controlled process 2Combinatorial Adjoint Matching 
+
+towards the base dynamics, weighted by the temperature 
+
+τ . We denote the corresponding instantaneous KL cost by 
+
+ct(u; x), which, for a CTMC, takes the form 
+
+ct(u; x) = τ X 
+
+> x′̸=x
+
+
+
+ut(x′, x) log ut(x′, x)
+
+ubase  
+
+> t
+
+(x′, x)
+
+−ut(x′, x) + ubase  
+
+> t
+
+(x′, x)
+
+
+
+.
+
+(5) This naturally induces the cost-to-go function at state x and time t under control u as 
+
+Jt(u; x) = Epu
+
+h
+
+g(X1) + 
+
+Z 1
+
+> s=t
+
+cs(u; Xs)ds Xt = x
+
+i
+
+, (6) and yields the following local policy-improvement objective (assuming the fixed cost-to-go): 
+
+min 
+
+> ut
+
+X 
+
+> x′̸=x
+
+ut(x′, x) Jt(u; x′) − Jt(u; x) + ct(u; x). (7) The key challenge therefore lies in estimating Jt(u; x′) −
+
+Jt(u; x). In continuous domains, this quantity can be ap-proximated via the first-order expansion: 
+
+Jt(u; x′) − Jt(u; x) ≈ ∇ Jt(u; x)⊤(x′ − x). (8) Here, ∇Jt(u; x) (or an estimator thereof) is often referred to as the adjoint (Pontryagin et al., 1962; Domingo-Enrich et al., 2024; 2025), and can be efficiently computed as a path gradient through the trajectory via a backward Ordi-nary Differential Equation. However, this gradient-based formulation does not directly extend to discrete state spaces, where conventional gradients are not well defined. 
+
+# 3. Method 
+
+In this section, we formally establish our formulation and method to extend the adjoint method to combinatorial space. 
+
+3.1. SOC Objective for Combinatorial Optimization 
+
+We begin by formulating a SOC objective for combinatorial optimization and study its behavior in the low-temperature regime τ → 0:
+
+lim   
+
+> τ→0
+
+min  
+
+> u
+
+Epu [g(X1)] + τ KL  pu(X) ∥ pbase (X). (9) We assume a homogeneous base process with a constant transition rate to every neighboring state: 
+
+ubase  
+
+> t
+
+(x(i), x) = ρτ , (10) where ρτ = σ(−λ/τ ) and λ > 0 is fixed. Under this choice, we have 
+
+lim   
+
+> τ→0
+
+ct(u; x) = λ X 
+
+> x′̸=x
+
+ut(x′, x), (11) which penalizes the aggregate transition rate away from the current state. Therefore, Equation 9 can be interpreted as seeking a shortest path to an optimal solution in the low-temperature limit. We obtain the following characterization of the optimal control as τ → 0.
+
+Proposition 3.1. Let x⋆ denote the closest minimizer to x
+
+under Hamming distance, assumed to be unique. For suffi-ciently small but fixed λ, as τ → 0, the optimal transition rate satisfies 
+
+u⋆t (x(i), x) = 
+
+
+
+11 − t , xi̸ = x⋆i ,
+
+0, xi = x⋆i .
+
+(12) 
+
+3.2. Discrete Adjoint 
+
+We now introduce the discrete adjoint , defined as the differ-ence in cost-to-go between two states under a policy u:
+
+aut (x′; x) := Jt(u; x′) − Jt(u; x). (13) Intuitively, the discrete adjoint measures the relative future cost of transitioning to a counterfactual state x′ compared to remaining at the current state x. By definition, the discrete adjoint satisfies the terminal condition 
+
+au 
+
+> 1
+
+(x′; x) = g(x′) − g(x). (14) For intermediate states, the discrete adjoint evolves accord-ing to the following backward recursion. 
+
+Proposition 3.2. The discrete adjoint satisfies 
+
+− ∂taut (x′; x) = X 
+
+> y̸=x′
+
+ut(y, x′)aut (y; x′)
+
+− X 
+
+> y̸=x
+
+ut(y, x)aut (y; x) + ct(u; x′) − ct(u; x).
+
+(15) 
+
+3.3. Combinatorial Adjoint Matching 
+
+We now specialize the discrete adjoint to combinatorial do-mains. Under the 1-Hamming neighborhood restriction, we consider x′ = x(i) and restrict the transitions in Equation 15 to single-coordinate flips: 
+
+− ∂taut (x(i); x) = X
+
+> j
+
+ut(x(ij ), x(i))aut (x(ij ); x(i))
+
+−X
+
+> j
+
+ut(x(j), x)aut (x(j); x)+ ct(u; x(i))−ct(u; x), (16) where x(ij ) denotes the state obtained by sequentially flip-ping the i-th and j-th coordinates of x.However, estimating the backward recursion, particularly the terms ut(x(ij ), x(i))aut (x(ij ); x(i)), requires sampling an additional trajectory starting from x(i). This prevents 3Combinatorial Adjoint Matching 
+
+us from exploiting the local information available from a single sampled trajectory (e.g., Xt = x) as in the continu-ous setting. To address this issue, we further simplify the recursion using a fixed-point condition analogous to that used in Adjoint Matching (Domingo-Enrich et al., 2025). We first observe that ut(x(j), x) = ut(x(ij ), x(i)) for any 
+
+i̸ = j under the optimal control u⋆, as a direct consequence of Proposition 3.1. Under this condition, we have 
+
+X 
+
+> j̸=i
+
+ut(x(ij ), x(i))aut (x(ij ); x(i)) −ut(x(j), x)aut (x(j); x)
+
+⇒ X 
+
+> j̸=i
+
+ut(x(j), x)
+
+
+
+aut (x(ij ); x(i)) − aut (x(j); x)
+
+
+
+(17) 
+
+= X 
+
+> j̸=i
+
+ut(x(j), x)
+
+
+
+aut (x(ij ); x(j)) − aut (x(i); x)
+
+
+
+,
+
+where the final equality follows from decomposing the ad-joint into differences of cost-to-go values and recombining the resulting terms. Using ut(x, x) = − P 
+
+> j
+
+ut(x(j), x),the above expression simplifies to 
+
+X 
+
+> y̸=x(i)
+
+ut(y, x)aut (y(i); y). (18) Now, we can further eliminate the term ut(x, x(i)) using the following proposition. 
+
+Proposition 3.3. Under the assumptions of Proposition 3.1, the optimal control u⋆ satisfies, for any t < 1,
+
+ut(x, x(i))aut (x; x(i)) + ct(u; x(i)) − ct(u; x)= − ut(x(i), x)aut (x; x(i)). (19) Combining the above results yields a “lean” adjoint ˜a satis-fying the following recursion under optimality: 
+
+−∂t˜aut (x(i); x) = X 
+
+> y̸=x(i)
+
+ut(y, x) ˜ aut (y(i); y)
+
+− ut(x(i), x) ˜ aut (x; x(i)),
+
+(20) with boundary condition ˜au 
+
+> 1
+
+(x′; x) = g(x′) − g(x).Intuitively, the “lean” adjoint associated with the state x(i)
+
+remains unchanged if either no future flip occurs or only coordinates other than i are flipped. Conversely, it changes sign whenever the i-th coordinate is flipped. Integrating Equation 20 yields, for any s ∈ [t, 1) ,
+
+˜aut (x(i); x) = Epu
+
+h
+
+(−1) xi⊕yi ˜as(y(i); y) Xt = x
+
+i
+
+. (21) Note that this recursion does not remain accurate arbitrarily close to the terminal time, i.e., as s → 1, where the ad-joint interpolates between local and global improvement directions (see Appendix A.4). Nevertheless, for local-improvement objectives, we may use the approximation 
+
+˜aus (x(i); x) ≈ ˜a1(x(i); x) as s → 1. (22) Based on the above results, a single sampled trajectory X
+
+can be used to estimate the intermediate “lean” adjoint as 
+
+˜aut (X(i) 
+
+> t
+
+; Xt) ≈ (−1) Xt,i ⊕X1,i 
+
+
+
+g(X(i)1 ) − g(X1)
+
+
+
+. (23) In particular, define the flipping-probability vector and flip-gradient vector as 
+
+ut(x) = 
+
+
+
+· · · , u t(x(i), x), · · · 
+
+⊤
+
+, (24) 
+
+∇flip g(x) = 
+
+
+
+· · · , g (x(i)) − g(x), · · · 
+
+⊤
+
+. (25) Replacing the cost-to-go difference in Equation 7 with the corresponding “lean” adjoint estimate yields our Combina-torial Adjoint Matching (CAM) objective: 
+
+LCAM (X) = 
+
+Z 1
+
+> t=0
+
+(
+
+ct(u; x)+ ut(Xt)⊤
+
+(−1) Xt⊕X1 ◦∇ flip g(X1)
+
+)
+
+dt. 
+
+(26) 
+
+# 4. Practical Adaptations 
+
+4.1. Time Discretization 
+
+In practice, the continuous time horizon [0 , 1] has to be discretized into a finite sequence of intervals 0 = t0 < t 1 <
+
+· · · < t K = 1 . Let 
+
+Λ = 
+
+Z tk+1 
+
+> s=tk
+
+us(Xs) ds, 
+
+where Λi denotes the expected number of flips of the i-th co-ordinate during [tk, t k+1 ). When the interval is sufficiently small, we have Λi ≪ 1, yielding the approximation 
+
+Ptk ,t k+1 (i-th coordinate is flipped ) ≈ Λi. (27) We therefore parameterize the integrated transition rates over each interval using a neural network uθ :
+
+Z tk+1 
+
+> s=tk
+
+us(Xs) ds ≈ uθtk (Xtk ). (28) Under this approximation, the transition distribution be-comes a coordinate-wise Bernoulli, Ber  uθt (Xt), whose integrated KL cost over the interval reduces to 
+
+−τ H uθt (Xt) + λ uθt (Xt) 1 , (29) 4Combinatorial Adjoint Matching 
+
+where H(uθt (Xt)) denotes the entropy of the Bernoulli. Combining these components yields the discretized CAM: 
+
+LCAM (X) ≈ X
+
+> t
+
+(
+
+−τ H uθt (Xt) + λ∥uθt (Xt)∥1
+
++ uθt (Xt)⊤
+
+(−1) Xt⊕X1 ◦ ∇ flip g(X1)
+
+)
+
+.
+
+(30) Empirically, we find that the primary performance gains of CAM originate from the final adjoint term in Equa-tion (30) , which encodes the trajectory-level optimization signal. In contrast, the entropy regularization and transition-rate penalty play a comparatively minor role. For instance, we set λ = 0 throughout our experiments and observe little performance degradation when further removing the entropy term. This observation suggests that the effectiveness of CAM is largely attributable to the discrete adjoint dynam-ics rather than the specific regularization induced by the stochastic control formulation. Nevertheless, we find that strong neural architectures remain important for fully realiz-ing the benefits of CAM. Accordingly, all experiments build upon the architectures introduced in prior diffusion-based CO solvers (Sanokowski et al., 2024; 2025). Additional stabilization techniques used for weaker architectures are provided in Appendix C. 
+
+4.2. Computation of Flip-Gradient 
+
+The computation of the flip-gradient ∇flip g(X1) is the pri-mary computational bottleneck in Equation 30, where it-eratively evaluating g(X(i)1 ) is prohibitively expensive for large-scale problems. Below, we discuss efficient strategies for computing or approximating the flip-gradient in two rep-resentative settings, using Maximum Independent Set (MIS) and Traveling Salesman Problem (TSP) as examples. 
+
+Quadratic Unconstrained Binary Optimization (QUBO). 
+
+Many CO problems admit relaxed formulations of the form 
+
+g(x) = a(x)+ βb (x), which can be expressed in the QUBO form. This representation is particularly suitable for prob-lems with local structural constraints, such as MIS, and constitutes the primary setting considered by most existing unsupervised diffusion-based CO solvers. For QUBO objectives of the form 
+
+g(x) = x⊤Qx , (31) the flip-gradient admits a closed-form expression: 
+
+∇flip g(x) = (1 − 2x) ◦ (Qx + Q⊤x). (32) This formulation enables efficient and exact computation of the flip-gradient without explicitly enumerating all single-coordinate perturbations. 
+
+General Combinatorial Optimization. Training unsu-pervised diffusion models for general combinatorial opti-mization problems beyond QUBO remains largely under-explored, primarily because tractable unsupervised targets are unavailable for problems with global constraints, such as TSP. To address this challenge, we introduce a surrogate strategy for constructing the flip-gradient. Starting from the sampled terminal solution X1, we first obtain an improved local solution X+1 using a problem-specific local search heuristic. For TSP, we employ greedy decoding followed by 2-OPT refinement. We then define the surrogate objective 
+
+g(x) = ∥x − X+1 ∥1. (33) Under this construction, the corresponding flip-gradient be-comes particularly simple: flipping a coordinate receives a positive label if it moves the current solution closer to X+1 ,and a negative label otherwise. Consequently, instead of re-gressing the magnitude of the flip-gradient, we reformulate the training objective as a binary classification problem. Specifically, we replace the original regression-style objec-tive with a binary cross-entropy loss that predicts whether each coordinate of Xt should be flipped to match the cor-responding value in X+1 . This modification better aligns the learning objective with the discrete and coordinate-wise structure of the surrogate labels, while also improving train-ing stability in practice. 
+
+# 5. Experiments 
+
+5.1. Experimental Setup CO Problems and Benchmarks. We evaluate CAM pri-marily on MIS and TSP, corresponding to the two mecha-nisms for obtaining the flip-gradient described above. For MIS, we evaluate on both Revised Model B (RB) 
+
+graphs (Xu & Li, 2000) and Erd ˝os–R ´enyi (ER) graphs across two different scales. Specifically, RB graphs are gener-ated at small (200–300 nodes) and large (800–1,200 nodes) scales, while ER graphs include small instances with 700– 800 nodes and large instances with 9,000–11,000 nodes. The large ER graphs are used as a transfer-testing bench-mark for models trained on the small ER graphs. Through-out the paper, we use the suffix “-[ m–M ]” to denote the corresponding range of node counts. For TSP, city coordinates are sampled uniformly from the unit square (Kool et al., 2019). We consider problem in-stances with M = 500 and M = 1000 cities, denoted as “TSP-M ”, where M specifies the problem size. 
+
+Baselines. We primarily compare CAM against diffusion-based CO solvers that can be viewed as discrete counterparts 5Combinatorial Adjoint Matching 
+
+Table 1. Comparative results on Maximum Independent Set (MIS). The best results are bolded and the second-best ones are underlined ,excluding OR solvers. The gap is computed against the result of KaMIS (Großmann et al., 2023) and CAM (on ER-[9000–11000]). 
+
+MIS RB-[200–300] RB-[800–1200] TYPE METHOD SIZE ↑ GAP ↓ TIME ↓ SIZE ↑ GAP ↓ TIME ↓
+
+OR Gurobi 19.98 0.60% 47.57m 40.90 5.21% 2.17h KaMIS 20.10 0.00% 1.40h 43.15 0.00% 2.05h SL INTEL 18.47 8.11% 13.07m 34.47 20.12% 20.28m DGL 17.36 13.93% 12.78m 34.50 20.05% 23.90m DIFUSCO 18.74 6.77% 5.33m 37.32 13.51% 8.46m UL DiffUCO 19.88 1.09% 4.97m 40.52 6.10% 6.61m SDDS 19.75 1.74% 4.97m 39.76 7.86% 6.61m RLNN 19.65 2.24% 4.97m 39.96 7.39% 6.61m CAM (Ours) 19.91 0.95% 4.97m 41.25 4.40% 6.61m 
+
+MIS ER-[700–800] ER-[9000–11000] TYPE METHOD SIZE ↑ GAP ↓ TIME ↓ SIZE ↑ GAP ↓ TIME ↓
+
+OR Gurobi 41.38 7.78% 50.00m — — —KaMIS 44.87 0.80% 52.13m 381.31 0.00% 7.60h SL INTEL 34.86 22.31% 6.06m 284.63 25.95% 5.02m DGL 37.26 16.96% 22.71m — — —DIFUSCO 41.85 6.73% 1.34m 347.00 9.72% 5.89m UL DIMES 42.06 6.26% 12.01m 332.80 13.42% 12.72m DiffUCO 43.98 1.98% 55s 373.31 2.88% 5.53m SDDS 43.31 3.48% 55s 350.63 8.78% 5.53m RLNN 43.14 3.86% 55s 374.38 2.60% 5.53m CAM (Ours) 44.16 1.58% 55s 384.38 0.00% 5.53m 
+
+Table 2. Comparative results on the Traveling Salesman Problem (TSP). The best results are bolded and the second-best ones are underlined, excluding OR solvers. The gap is computed against the result of LKH-3 (Helsgaun, 2017). 
+
+TSP TSP-500 TSP-1000 TYPE METHOD LENGTH ↓ GAP ↓ TIME ↓ LENGTH ↓ GAP ↓ TIME ↓
+
+OR Concorde 16.55 0.00% 37.66m 23.12 0.00% 6.65h LKH-3 16.55 0.00% 46.88m 23.12 0.00% 2.57h SL GCN 30.37 83.55% 38.02m 51.26 121.73% 51.67m DIFUSCO 16.85 1.81% 11.95m 23.85 3.16% 47.01m FMIP 16.83 1.69% 11.95m 23.81 2.98% 47.01m UL AM 19.53 18.03% 21.99m 29.90 29.23% 1.64m POMO 19.24 16.25% 12.80h 49.56 114.36% 63.45h DIMES 17.80 7.55% 2.11h 24.89 7.70% 4.53h SDDS 16.98 2.60% 11.95m 23.90 3.37% 47.01m CAM (Ours) 16.91 2.18% 11.95m 23.70 2.51% 47.01m 
+
+of adjoint matching in continuous domains, including: • DIFUSCO (Sun & Yang, 2023): standard diffusion models (Ho et al., 2020; Song et al., 2020); • FMIP (Li et al., 2025): Flow Matching (Lipman et al., 2023; Liu et al., 2023); • DiffUCO (Sanokowski et al., 2024): maximum-entropy reinforcement learning (Ziebart et al., 2008); • SDDS (Sanokowski et al., 2025): importance-weighted matching (Domingo-Enrich et al., 2024); • RLNN (Feng & Yang, 2025): Langevin dynam-ics (Welling & Teh, 2011; Song et al., 2021). All diffusion-based baselines are re-implemented and trained from scratch under a standardized setup. In addition, we include a broad range of baselines spanning operations research (OR) solvers, supervised learning (SL) methods, and unsupervised learning (UL) neural solvers. Additional details are provided in Appendix B.1. 6Combinatorial Adjoint Matching 
+
+Post-processing. We observe that post-processing can lead to substantial differences in final performance, even when applied to the same underlying model. To ensure a fair comparison, we standardize the post-processing proce-dures across all diffusion-based methods, since they share the same output format. For TSP, we apply greedy decoding followed by 2-OPT local search. For MIS, only greedy decoding is used. Im-portantly, all post-processing and evaluation are strictly restricted to the terminal state X1. For each instance, we perform multiple independent sampling runs and report the best result. All diffusion-based methods are allocated identical inference budgets in terms of both the number of inference steps and the number of independent runs. 
+
+Metrics. We use the original problem-specific objective as the primary evaluation metric, namely the tour length for TSP and the independent set size for MIS. For a more direct comparison, we also report the optimality gap with respect to the best achieved result: gap( c, c ∗) = |c−c∗||c∗| , where c
+
+denotes the objective value achieved by a method and c∗
+
+denotes the best objective value. Finally, we measure the total runtime of each method on the test set by sequentially 
+
+processing all test instances. 
+
+5.2. Main Results 
+
+We summarize the main results in Tables 1 and 2. On MIS, unsupervised diffusion-based solvers generally outperform supervised approaches. A possible explanation is that the MIS objective provides a structural local improve-ment signal, whose gradient is linear in x. As a result, learn-ing directly from the objective may be easier than regressing optimal solutions through supervision. Among all methods, CAM consistently achieves the strongest performance, of-ten with a substantial margin over the second-best baseline, particularly on RB-[800–1200] and ER-[9000–11000]. On ER-[9000–11000], CAM even surpasses the traditional OR solver KaMIS (Großmann et al., 2023), achieving state-of-the-art (SOTA) performance. More importantly, DiffUCO, SDDS, and RLNN require dense feedback at every intermediate diffusion step during training, whereas CAM operates with significantly weaker feedback. For example, CAM requires only a single MIS gradient evaluation at the terminal state to train a 50-step dif-fusion process, while RLNN requires the gradient feedback at all 50 intermediate states. TSP exhibits a markedly different trend from MIS. In this setting, supervised diffusion models perform substantially better, likely because the global tour constraint makes the objective considerably harder to optimize effectively with-out explicit supervision. Nevertheless, despite being fully unsupervised, CAM remains highly competitive, ranking as the third-best on TSP-500 and the best on TSP-1000. This result is particularly notable because CAM learns solely from suboptimal solutions sampled from its own policy. We additionally observe that CAM demonstrates relatively stronger performance on large-scale instances (RB-[800– 1200], ER-[9000–11000], and TSP-1000) compared to the baselines, highlighting the scalability of CAM 
+
+5.3. Additional Evaluation 
+
+Beyond the primary benchmarks on MIS and TSP, we fur-ther evaluate CAM on additional CO problems, including Maximum Cut (Max Cut) and Capacitated Vehicle Rout-ing Problem (CVRP), to verify whether the same empirical patterns persist across different problem families.                                   
+
+> Table 3. Comparative results on Max Cut. The best results are
+> bolded and the second-best ones are underlined , excluding the OR solver. The gap is computed against the result of CAM.
+> Max Cut BA-[800–1200] TYPE METHOD SIZE ↑GAP ↓TIME ↓
+> OR MQLib 2961.38 0.10% 8.33h SL DIFUSCO 2946.23 0.61% 6.08m FMIP 2939.58 0.83% 5.49m UL DiffUCO 2961.07 0.11% 5.49m SDDS 2963.95 0.01% 5.49m RLNN 2956.81 0.25% 5.49m CAM (Ours) 2964.20 0.00% 5.49m
+
+Maximum Cut. We evaluate CAM on Max Cut over Barab ´asi–Albert (BA) graphs (Barab ´asi & Albert, 1999) with 800 to 1,200 nodes, as shown in Table 3. Similar to MIS, Max Cut can also be formulated as a QUBO prob-lem, and we observe a highly consistent trend across the two tasks. In particular, unsupervised learning approaches generally achieve stronger performance than supervised diffusion-based methods on these large-scale graph opti-mization problems. Among all learning-based approaches, CAM achieves the best overall performance, outperform-ing both supervised and previous unsupervised baselines. Particularly, CAM even outperforms the OR solver MQLib (Dunning et al., 2018) with less solving time, demonstrating its effectiveness as a SOTA solver. 
+
+Capacitated Vehicle Routing Problem. We further eval-uate CAM on the CVRP, a generalized variant of TSP with additional vehicle-capacity constraints, whose combinato-rial objective is substantially more challenging to optimize. Table 4 reports the results on CVRP-100 (Ma et al., 2025b), where customer locations are uniformly sampled in a unit square. For post-processing, we decode the predicted edge scores into feasible routes using a score-guided Clarke– 7Combinatorial Adjoint Matching                               
+
+> Table 4. Comparative results on the Capacitated Vehicle Routing Problem (CVRP). The best results are bolded and the second-best ones are underlined , excluding OR solvers. The gap is computed against the result of the OR solver HGS (Vidal et al., 2012).
+> CVRP CVRP-100 TYPE METHOD LENGTH ↓GAP ↓TIME ↓
+> OR HGS 15.56 0.00% 55.64h SL DIFUSCO 15.97 2.63% 33.75m FMIP 16.04 3.08% 33.70m UL SDDS 16.16 3.86% 33.70m CAM (Ours) 15.98 2.70% 33.70m
+
+Wright savings heuristic (Clarke & Wright, 1964), followed by a classic local search algorithm (Ma et al., 2025a). Simi-lar to the observations on TSP, supervised approaches gener-ally achieve stronger performance than unsupervised meth-ods on routing problems with highly structured sequential objectives. Nevertheless, CAM significantly improves over the unsupervised baseline SDDS, outperforms the super-vised method FMIP, and achieves performance close to that of the strongest supervised baseline DIFUSCO. Overall, the empirical trends on both Max Cut and CVRP remain highly consistent with our findings on MIS and TSP. 
+
+5.4. Ablation Studies 
+
+We conduct several ablation studies to analyze the effects of inference-time sampling budgets, terminal heuristics, and adjoint propagation in CAM.  
+
+> Figure 1. Comparison between CAM and baselines under different inference-time sampling budgets.
+
+Performance Across Different Sampling Steps. Fig-ure 1 compares CAM with several baselines under differ-ent inference-time sampling budgets on ER-[9000–11000]. CAM consistently achieves the best performance across all sampling budgets and exhibits a substantially stronger inference-time scaling effect. In particular, even with only 10 sampling steps, CAM al-ready achieves performance comparable to that of other strong baselines using 200 steps. As the number of inference steps increases, CAM continues to improve and eventually reaches a zero optimality gap. These results suggest that CAM not only delivers strong performance under limited inference budgets, but also scales effectively with additional inference-time computation.          
+
+> Table 5. Ablation on different CAM training targets on TSP-500.
+> TSP TSP-500 CAM No adjoint Local search w/ greedy Standard GAP ↓2.83% 2.36% 2.18%
+
+Effect of Different Training Targets. We further investi-gate the role of adjoint propagation and terminal heuristic quality using several training variants on TSP-500. Table 5 compares three variants: • No adjoint , which directly imitates 2-OPT improve-ments without adjoint propagation; • Local search w/ greedy , which removes the terminal 2-OPT post-processing during training, with only the greedy decoding for X+1 ; and • The standard CAM objective. Removing adjoint propagation causes a substantial degra-dation in performance, increasing the optimality gap from 
+
+2.18% to 2.83% . In contrast, removing the strong 2-OPT terminal heuristic only slightly degrades the final perfor-mance to 2.36% . These results indicate that the primary performance gain of CAM does not come from directly imitating powerful heuristics, but rather from propagating optimization signals backward through the trajectory via adjoint dynamics.  
+
+> Figure 2. Training dynamics comparison between CAM and the unsupervised baseline SDDS.
+
+Comparison with SDDS. Figure 2 compares the train-ing dynamics between CAM and the unsupervised baseline 8Combinatorial Adjoint Matching 
+
+SDDS. While SDDS relies purely on self-sampled trajec-tories for optimization, CAM incorporates gradient-based trajectory guidance through adjoint propagation. As training progresses in the high-dimensional discrete so-lution space, SDDS exhibits highly unstable optimization behavior and rapidly diverges. In contrast, CAM maintains stable convergence throughout training and continuously im-proves the solution quality. These observations suggest that trajectory-level gradient propagation provides a significantly more stable optimization signal than purely sample-based training objectives. 
+
+# 6. Related Work 
+
+6.1. Adjoint Method 
+
+Adjoint methods (Pontryagin et al., 1962) are a classical tool for optimizing objectives defined by Ordinary and Stochas-tic Differential Equations. Building on this, Adjoint Match-ing (AM) (Domingo-Enrich et al., 2025) frames reward-driven adaptation of continuous diffusion/flow models as a stochastic control problem, and derives a practical training objective that uses adjoint-based gradient information to update the control along the generative trajectory. A con-current work, Discrete Adjoint Matching (DAM) (So et al., 2026), addresses a related setting but follows a fundamen-tally different approach. DAM relies on importance sam-pling to estimate the optimal control and does not propagate gradients through the trajectory, whereas CAM explicitly exploits adjoint-based gradients to capture the path-gradient structure in the combinatorial space. 
+
+6.2. Diffusion Models for Combinatorial Optimization 
+
+Diffusion models and their variants, originally developed for continuous data (Sohl-Dickstein et al., 2015; Ho et al., 2020; Lipman et al., 2023), have recently become effective tools for combinatorial optimization (CO). By generating so-lutions through iterative denoising, diffusion-based solvers can better represent multi-modal solution distributions and navigate the highly nonconvex CO landscape than one-shot generators. DIFUSCO (Sun & Yang, 2023) adapts contin-uous diffusion to discrete CO and substantially improves both efficiency and solution quality over prior end-to-end neural solvers. A line of work, including T2T (Li et al., 2023) and Fast T2T (Li et al., 2024), has explored improve-ments. More recently, FMIP (Li et al., 2025) applies flow matching (Lipman et al., 2023; Liu et al., 2023) to mixed-integer linear programs, and GenSCO (Li et al., 2026) treats diffusion sampling as a search operator by alternating solu-tion disruption with diffusion resampling to enable efficient test-time scaling. These advances are largely orthogonal to our framework and can be incorporated independently. A common limitation of many diffusion-based CO solvers is their reliance on supervised training with large sets of near-optimal solutions. Recent efforts explore unsuper-vised training, including DiffUCO (Sanokowski et al., 2024) (entropy-regularized RL) and SDDS (Sanokowski et al., 2025) (importance-weighted matching), but they typically require heavy sampling to control variance and estimate action quality. RLNN (Feng & Yang, 2025) casts diffusion as regularized Langevin dynamics and optimizes a local objective to improve scalability, but this limits the ability to capture long-term dependencies and may lead to subop-timal global solutions. In contrast, our adjoint matching approach backpropagates the terminal objective as a match-ing objective, providing a structured, low-variance signal that directly guides intermediate controls to improve final solution quality. 
+
+# 7. Conclusion 
+
+We presented Combinatorial Adjoint Matching (CAM), an adjoint-based framework for training diffusion solvers for combinatorial optimization in an unsupervised way. By for-mulating diffusion-based combinatorial optimization as a stochastic control problem over discrete trajectories, CAM enables trajectory-level optimization through discrete ad-joint dynamics and structured path-gradient signals. Com-pared with prior unsupervised diffusion approaches based on reinforcement learning or importance-weighted match-ing, CAM provides a more informative and lower-variance optimization signal while substantially reducing the amount of environment feedback required during training. Empirically, CAM consistently outperforms existing unsu-pervised diffusion baselines across a diverse set of combi-natorial optimization problems, including Maximum Inde-pendent Set, Traveling Salesman Problem, Maximum Cut, and Capacitated Vehicle Routing Problem, while achieving performance competitive with strong supervised diffusion solvers and even traditional heuristic solvers. These results demonstrate that adjoint-based trajectory optimization can serve as an effective paradigm for scalable and data-efficient neural combinatorial optimization. Nevertheless, several limitations remain. Our theoretical analysis relies on idealized assumptions that may not fully capture the complexity of highly non-convex NP-hard op-timization landscapes. Moreover, the current framework still depends on surrogate discrete gradients and problem-specific local improvement operators to construct training signals, which may limit its applicability to more general combinatorial domains. Future work includes developing more general discrete path-gradient estimators, reducing reliance on hand-designed local search procedures, and ex-tending adjoint-based optimization principles to broader classes of discrete generative models and combinatorial op-timization problems. 9Combinatorial Adjoint Matching 
+
+# Impact Statement 
+
+This paper presents work whose goal is to advance the field of Machine Learning. There are many potential societal consequences of our work, none which we feel must be specifically highlighted here. 
+
+# References 
+
+Anderson, W. J. Continuous-time Markov chains: An applications-oriented approach . Springer, New York, NY, 2012. doi: https://doi.org/10.1007/978-1-4612-3038-0. Applegate, D., Bixby, R., Chv ´atal, V., and Cook, W. Concorde TSP solver. https://www.math. uwaterloo.ca/tsp/concorde/index.html ,2006. Software package. Barab ´asi, A.-L. and Albert, R. Emergence of scal-ing in random networks. Science , 286(5439): 509–512, 1999. doi: 10.1126/science.286.5439. 509. URL https://www.science.org/doi/ abs/10.1126/science.286.5439.509 .Bellman, R. The theory of dynamic programming. Bul-letin of the American Mathematical Society , 60:503–515, 1954. URL https://api.semanticscholar. org/CorpusID:120598356 .B ¨other, M., Kißig, O., Taraz, M., Cohen, S., Seidel, K., and Friedrich, T. What’s wrong with deep learning in tree search for combinatorial optimization. In In-ternational Conference on Learning Representations ,2022. URL https://openreview.net/forum? id=mk0HzdqY7i1 .Cai, T., Luo, S., Xu, K., He, D., Liu, T.-Y., and Wang, L. Graphnorm: A principled approach to accelerating graph neural network training. In Meila, M. and Zhang, T. (eds.), Proceedings of the 38th International Conference on Machine Learning , volume 139 of Proceedings of Machine Learning Research , pp. 1204–1215. PMLR, 18– 24 Jul 2021. URL https://proceedings.mlr. press/v139/cai21e.html .Clarke, G. and Wright, J. W. Scheduling of vehicles from a central depot to a number of delivery points. 
+
+Operations Research , 12(4):568–581, 1964. ISSN 0030364X, 15265463. URL http://www.jstor. org/stable/167703 .Domingo-Enrich, C., Han, J., Amos, B., Bruna, J., and Chen, R. T. Q. Stochastic optimal control matching. In The Thirty-eighth Annual Conference on Neural In-formation Processing Systems , 2024. URL https: //openreview.net/forum?id=wfU2CdgmWt .Domingo-Enrich, C., Drozdzal, M., Karrer, B., and Chen, R. T. Q. Adjoint matching: Fine-tuning flow and diffu-sion generative models with memoryless stochastic op-timal control. In The Thirteenth International Confer-ence on Learning Representations , 2025. URL https: //openreview.net/forum?id=xQBRrtQM8u .Dunning, I., Gupta, S., and Silberholz, J. What works best when? a systematic evaluation of heuristics for max-cut and QUBO. INFORMS Journal on Computing , 30(3), 2018. Feng, S. and Yang, Y. Regularized langevin dy-namics for combinatorial optimization. In Forty-second International Conference on Machine Learning ,2025. URL https://openreview.net/forum? id=bbJ0QCujU4 .Feng, S., Sun, W., Li, S., Talwalkar, A., and Yang, Y. A comprehensive evaluation of contemporary ml-based solvers for combinatorial optimization, 2025. URL 
+
+https://arxiv.org/abs/2505.16952 .Fleming, W. H. and Rishel, R. Deterministic and stochastic optimal control. 1975. URL https: //api.semanticscholar.org/CorpusID: 118734219 .Großmann, E., Lamm, S., Schulz, C., and Strash, D. Find-ing near-optimal weight independent sets at scale. In 
+
+Proceedings of the Genetic and Evolutionary Compu-tation Conference , GECCO ’23, pp. 293–302, New York, NY, USA, 2023. Association for Computing Machinery. ISBN 9798400701191. doi: 10.1145/ 3583131.3590353. URL https://doi.org/10. 1145/3583131.3590353 .Gurobi Optimization, LLC. Gurobi Optimizer Reference Manual, 2023. URL https://www.gurobi.com .Hammer, P. C. Dynamic programming . richard bell-man. princeton university press, princeton, n.j., 1957. xxv+ 342 pp. $6.75. Science , 1958. URL https: //api.semanticscholar.org/CorpusID: 239844533 .Helsgaun, K. An extension of the lin-kernighan-helsgaun tsp solver for constrained traveling salesman and vehicle routing problems, 12 2017. Ho, J., Jain, A., and Abbeel, P. Denoising diffusion probabilistic models. In Larochelle, H., Ranzato, M., Hadsell, R., Balcan, M., and Lin, H. (eds.), 
+
+Advances in Neural Information Processing Systems ,volume 33, pp. 6840–6851. Curran Associates, Inc., 2020. URL https://proceedings.neurips. cc/paper_files/paper/2020/file/ 
+
+10 Combinatorial Adjoint Matching 
+
+4c5bcfec8584af0d967f1ab10179ca4b-Paper. pdf .Joshi, C. K., Laurent, T., and Bresson, X. An efficient graph convolutional network technique for the travelling sales-man problem, 2019. URL https://arxiv.org/ abs/1906.01227 .Kappen, H. J. Path integrals and symmetry breaking for optimal control theory. Journal of Statistical Me-chanics: Theory and Experiment , 2005(11):P11011, nov 2005. doi: 10.1088/1742-5468/2005/11/P11011. URL https://doi.org/10.1088/1742-5468/ 2005/11/P11011 .Kool, W., van Hoof, H., and Welling, M. Attention, learn to solve routing problems! In International Conference on Learning Representations , 2019. URL https:// openreview.net/forum?id=ByxBFsRqYm .Korte, B. and Vygen, J. Combinatorial Optimization: The-ory and Algorithms . Springer Publishing Company, In-corporated, 5th edition, 2012. ISBN 3642244874. Kwon, Y.-D., Choo, J., Kim, B., Yoon, I., Gwon, Y., and Min, S. Pomo: Policy optimization with multiple optima for reinforcement learning. In Larochelle, H., Ranzato, M., Hadsell, R., Balcan, M., and Lin, H. (eds.), 
+
+Advances in Neural Information Processing Systems ,volume 33, pp. 21188–21198. Curran Associates, Inc., 2020. URL https://proceedings.neurips. cc/paper_files/paper/2020/file/ f231f2107df69eab0a3862d50018a9b2-Paper. pdf .Li, H., Yuan, H., Zhang, H., Lin, J., Ge, D., Wang, M., and Ye, Y. Fmip: Joint continuous-integer flow for mixed-integer linear programming, 2025. URL https: //arxiv.org/abs/2507.23390 .Li, Y., Guo, J., Wang, R., and Yan, J. From distribution learn-ing in training to gradient search in testing for combinato-rial optimization. In Thirty-seventh Conference on Neural Information Processing Systems , 2023. URL https: //openreview.net/forum?id=JtF0ugNMv2 .Li, Y., Guo, J., Wang, R., Zha, H., and Yan, J. Fast t2t: Optimization consistency speeds up diffusion-based training-to-testing solving for combinatorial optimiza-tion. In The Thirty-eighth Annual Conference on Neural Information Processing Systems , 2024. URL https: //openreview.net/forum?id=xDrKZOZEOc .Li, Y., Chen, L., Wang, H., Wang, R., and Yan, J. Generation as search operator for test-time scaling of diffusion-based combinatorial optimization. In The Thirty-ninth Annual Conference on Neural Information Processing Systems ,2026. URL https://openreview.net/forum? id=9JM03CQwzC .Li, Z., Chen, Q., and Koltun, V. Combinatorial op-timization with graph convolutional networks and guided tree search. In Bengio, S., Wallach, H., Larochelle, H., Grauman, K., Cesa-Bianchi, N., and Garnett, R. (eds.), Advances in Neural Information Processing Systems , volume 31. Curran Associates, Inc., 2018. URL https://proceedings.neurips. cc/paper_files/paper/2018/file/ 8d3bba7425e7c98c50f52ca1b52d3735-Paper. pdf .Lipman, Y., Chen, R. T. Q., Ben-Hamu, H., Nickel, M., and Le, M. Flow matching for generative modeling. In The Eleventh International Conference on Learning Represen-tations , 2023. URL https://openreview.net/ forum?id=PqvMRDCJT9t .Liu, L., Jiang, H., He, P., Chen, W., Liu, X., Gao, J., and Han, J. On the variance of the adaptive learning rate and beyond. In International Conference on Learning Representations , 2020. URL https://openreview. net/forum?id=rkgz2aEKDr .Liu, X., Gong, C., and qiang liu. Flow straight and fast: Learning to generate and transfer data with rectified flow. In The Eleventh International Conference on Learning Representations , 2023. URL https://openreview. net/forum?id=XVjTT1nw5z .Loshchilov, I. and Hutter, F. Decoupled weight decay reg-ularization. In International Conference on Learning Representations , 2019. URL https://openreview. net/forum?id=Bkg6RiCqY7 .Ma, J., Pan, W., Li, Y., and Yan, J. COExpander: Adaptive solution expansion for combinatorial optimiza-tion. In Forty-second International Conference on Ma-chine Learning , 2025a. URL https://openreview. net/forum?id=KMaBXMWsBM .Ma, J., Pan, W., Li, Y., and Yan, J. Ml4co-bench-101: Benchmark machine learning for classic combinato-rial problems on graphs. In The Thirty-ninth Annual Conference on Neural Information Processing Systems Datasets and Benchmarks Track , 2025b. URL https: //openreview.net/forum?id=ye4ntB1Kzi .Pontryagin, L. S., Boltyanskii, V. G., Gamkrelidze, R. V., and Mishchenko, E. F. The Mathematical Theory of Optimal Processes . 1962. Qiu, R., Sun, Z., and Yang, Y. DIMES: A differentiable meta solver for combinatorial optimization problems. In Oh, A. H., Agarwal, A., Belgrave, D., and Cho, K. (eds.), 11 Combinatorial Adjoint Matching 
+
+Advances in Neural Information Processing Systems ,2022. URL https://openreview.net/forum? id=9u05zr0nhx .Sanokowski, S., Hochreiter, S., and Lehner, S. A diffu-sion model framework for unsupervised neural combi-natorial optimization. In ICML , 2024. URL https: //openreview.net/forum?id=AFfXlKFHXJ .Sanokowski, S., Berghammer, W. F., Wang, H. P., En-nemoser, M., Hochreiter, S., and Lehner, S. Scalable dis-crete diffusion samplers: Combinatorial optimization and statistical physics. In The Thirteenth International Confer-ence on Learning Representations , 2025. URL https: //openreview.net/forum?id=peNgxpbdxB .Sethi, S. and Thompson, G. Optimal Control Theory: Appli-cations to Management Science and Economics . 01 2000. ISBN 978-0-387-28092-9. doi: 10.1007/0-387-29903-3. So, O., Karrer, B., Fan, C., Chen, R. T. Q., and Liu, G.-H. Discrete adjoint matching. In The Fourteenth International Conference on Learning Representations ,2026. URL https://openreview.net/forum? id=VXB4xxAgOf .Sohl-Dickstein, J., Weiss, E., Maheswaranathan, N., and Ganguli, S. Deep unsupervised learning using nonequi-librium thermodynamics. In Bach, F. and Blei, D. (eds.), 
+
+Proceedings of the 32nd International Conference on Ma-chine Learning , volume 37 of Proceedings of Machine Learning Research , pp. 2256–2265, Lille, France, 07– 09 Jul 2015. PMLR. URL https://proceedings. mlr.press/v37/sohl-dickstein15.html .Song, J., Meng, C., and Ermon, S. Denoising diffusion implicit models. In International Conference on Learning Representations , 2020. Song, Y., Sohl-Dickstein, J., Kingma, D. P., Kumar, A., Ermon, S., and Poole, B. Score-based generative mod-eling through stochastic differential equations. In In-ternational Conference on Learning Representations ,2021. URL https://openreview.net/forum? id=PxTIG12RRHS .Sun, H., Dai, H., Xia, W., and Ramamurthy, A. Path auxiliary proposal for MCMC in discrete space. In 
+
+International Conference on Learning Representations ,2022. URL https://openreview.net/forum? id=JSR-YDImK95 .Sun, Z. and Yang, Y. DIFUSCO: Graph-based diffusion solvers for combinatorial optimization. In Thirty-seventh Conference on Neural Information Processing Systems ,2023. URL https://openreview.net/forum? id=JV8Ff0lgVV .Vidal, T., Crainic, T. G., Gendreau, M., Lahrichi, N., and Rei, W. A hybrid genetic algorithm for multidepot and periodic vehicle routing problems. Operations Research ,60(3):611–624, 2012. doi: 10.1287/opre.1120.1048. URL https://doi.org/10.1287/opre.1120. 1048 .Welling, M. and Teh, Y. W. Bayesian learning via stochastic gradient langevin dynamics. In Proceedings of the 28th International Conference on International Conference on Machine Learning , ICML’11, pp. 681–688, Madison, WI, USA, 2011. Omnipress. ISBN 9781450306195. Xu, K. and Li, W. Exact phase transitions in random constraint satisfaction problems. ArXiv , cs.AI/0004005, 2000. URL https://api.semanticscholar. org/CorpusID:2407346 .Ziebart, B. D., Maas, A., Bagnell, J. A., and Dey, A. K. Maximum entropy inverse reinforcement learning. In 
+
+Proceedings of the 23rd National Conference on Artificial Intelligence - Volume 3 , AAAI’08, pp. 1433–1438. AAAI Press, 2008. ISBN 9781577353683. 12 Combinatorial Adjoint Matching 
+
+# A. Proofs of Theoretical Results 
+
+We first define the value function associated with the SOC problem as optimal cost-to-go: 
+
+Vt(x) := min  
+
+> u
+
+Jt(u; x). (34) For the reference CTMC process pbase (Kappen, 2005), the value function admits the following exponential expectation representation (Bellman, 1954): 
+
+Vt(x) = −τ log Epbase 
+
+
+
+exp 
+
+
+
+− g(X1)
+
+τ
+
+
+
+Xt = x
+
+
+
+. (35) 
+
+A.1. Proof of Proposition 3.1 
+
+Let x⋆ be the closest minimizer to x, and denote 
+
+d = ∥x − x⋆∥1. (36) Then Equation 35 becomes 
+
+Vt(x) = −τ log 
+
+
+
+exp 
+
+
+
+− g⋆
+
+τ
+
+
+
+Epbase 
+
+
+
+exp 
+
+ g⋆ − g(X1)
+
+τ
+
+
+
+Xt = x
+
+ 
+
+= g⋆ − τ log Epbase 
+
+
+
+exp 
+
+ g⋆ − g(X1)
+
+τ
+
+
+
+Xt = x
+
+
+
+.
+
+(37) Under the homogeneous base process, each coordinate evolves independently. For a coordinate that agrees with x⋆ at time t,the probability that it agrees with x⋆ at time 1 is 
+
+1 + exp( −2(1 − t)ρτ )2 . (38) For a coordinate that disagrees with x⋆ at time t, the probability that it agrees with x⋆ at time 1 is 
+
+1 − exp( −2(1 − t)ρτ )2 . (39) Therefore, 
+
+pbase (X1 = x⋆ | Xt = x) = 
+
+ 1 + exp( −2(1 − t)ρτ )2
+
+N −d  1 − exp( −2(1 − t)ρτ )2
+
+d
+
+. (40) Since 
+
+ρτ = σ(−λ/τ ) = exp( −λ/τ )(1 + o(1)) , (41) we have 1 + exp( −2(1 − t)ρτ )2 = 1 + o(1) , (42) and 1 − exp( −2(1 − t)ρτ )2 = (1 − t)ρτ (1 + o(1)) . (43) Hence 
+
+pbase (X1 = x⋆ | Xt = x) = (1 − t)d exp 
+
+
+
+− dλ τ
+
+
+
+(1 + o(1)) . (44) Assume λ > 0 is sufficiently small so that, in the low-temperature limit, the contribution of the closest minimizer x⋆
+
+dominates the exponential expectation. Then 
+
+Vt(x) = g⋆ − τ log 
+
+
+
+(1 − t)d exp 
+
+
+
+− dλ τ
+
+
+
+(1 + o(1)) 
+
+
+
+= g⋆ + dλ − τ d log(1 − t) + o(τ ).
+
+(45) 13 Combinatorial Adjoint Matching 
+
+Now consider the neighboring state x(i), obtained by flipping the i-th coordinate of x. There are two cases. 
+
+Case 1: xi̸ = x⋆i . Flipping coordinate i moves x closer to x⋆, so 
+
+∥x(i), x⋆∥ = d − 1. (46) Therefore, 
+
+Vt(x(i)) = g⋆ + ( d − 1) λ − τ (d − 1) log(1 − t) + o(τ ), (47) and hence 
+
+Vt(x(i)) − Vt(x) = −λ + τ log(1 − t) + o(τ ). (48) Using 
+
+u⋆t (x(i), x) = ubase  
+
+> t
+
+(x(i), x) exp 
+
+
+
+− Vt(x(i)) − Vt(x)
+
+τ
+
+
+
+, (49) and 
+
+ubase  
+
+> t
+
+(x(i), x) = ρτ = exp( −λ/τ )(1 + o(1)) , (50) we obtain 
+
+u⋆t (x(i), x) = exp 
+
+
+
+− λτ
+
+
+
+exp 
+
+ λτ − log(1 − t) + o(1) 
+
+
+
+= 11 − t (1 + o(1)) .
+
+(51) Thus 
+
+u⋆t (x(i), x) → 11 − t . (52) 
+
+Case 2: xi = x⋆i . Flipping coordinate i moves x farther from x⋆, so 
+
+∥x(i) − x⋆∥ = d + 1 . (53) Therefore, 
+
+Vt(x(i)) = g⋆ + ( d + 1) λ − τ (d + 1) log(1 − t) + o(τ ), (54) and hence 
+
+Vt(x(i)) − Vt(x) = λ − τ log(1 − t) + o(τ ). (55) Again using the optimal-rate formula, 
+
+u⋆t (x(i), x) = exp 
+
+
+
+− λτ
+
+
+
+exp 
+
+
+
+− λτ + log(1 − t) + o(1) 
+
+
+
+= (1 − t) exp 
+
+
+
+− 2λτ
+
+
+
+(1 + o(1)) .
+
+(56) Thus 
+
+u⋆t (x(i), x) → 0. (57) Combining the two cases gives 
+
+u⋆t (x(i), x) = 
+
+
+
+11 − t , xi̸ = x⋆i ,
+
+0, xi = x⋆i ,
+
+(58) as τ → 0, which proves the proposition. □
+
+14 Combinatorial Adjoint Matching 
+
+A.2. Proof of Proposition 3.2 
+
+Recall the expected future cost under a fixed policy u:
+
+Jt(u; x) = Epu
+
+
+
+g(X1) + 
+
+Z 1
+
+> t
+
+cs(u; Xs) ds Xt = x
+
+
+
+. (59) Then Jt(u; x) satisfies the backward Kolmogorov equation 
+
+−∂tJt(u; x) = ct(u; x) + X 
+
+> y̸=x
+
+ut(y, x) Jt(u; y) − Jt(u; x). (60) By definition, the discrete adjoint is 
+
+aut (x′; x) = Jt(u; x′) − Jt(u; x). (61) Taking the time derivative gives 
+
+−∂taut (x′; x) = −∂tJt(u; x′) + ∂tJt(u; x). (62) Substituting Equation 60 for both states yields 
+
+−∂taut (x′; x) = X 
+
+> y̸=x′
+
+ut(y, x′) Jt(u; y) − Jt(u; x′) − X 
+
+> y̸=x
+
+ut(y, x) Jt(u; y) − Jt(u; x) + ct(u; x′) − ct(u; x). (63) Using again the definition of the discrete adjoint, 
+
+−∂taut (x′; x) = X 
+
+> y̸=x′
+
+ut(y, x′)aut (y; x′) − X 
+
+> y̸=x
+
+ut(y, x)aut (y; x) + ct(u; x′) − ct(u; x). (64) This proves Proposition 3.2. □
+
+A.3. Proof of Proposition 3.3 
+
+Under Proposition 3.1, the optimal value satisfies Jt(u⋆; x) = Vt(x). Therefore, 
+
+au⋆ 
+
+> t
+
+(x; x(i)) = Jt(u⋆; x) − Jt(u⋆; x(i)) = Vt(x) − Vt(x(i)). (65) Let x⋆ be the closest minimizer to x. There are two cases. 
+
+Case 1: xi̸ = x⋆i . Flipping coordinate i moves x closer to x⋆. From Proposition 3.1, 
+
+u⋆t (x(i), x) = 11 − t + o(1) , u⋆t (x, x(i)) = 0 + o(1) . (66) Moreover, from the low-temperature expansion of Vt,
+
+Vt(x) − Vt(x(i)) = λ − τ log(1 − t) + o(τ ). (67) Thus 
+
+au⋆ 
+
+> t
+
+(x; x(i)) = λ − τ log(1 − t) + o(τ ). (68) The limiting running cost is 
+
+ct(u⋆; x) = λ X 
+
+> y̸=x
+
+u⋆t (y, x) + o(1) . (69) Since x has one more mismatched coordinate than x(i), we have 
+
+ct(u⋆; x(i)) − ct(u⋆; x) = − λ
+
+1 − t + o(1) . (70) 15 Combinatorial Adjoint Matching 
+
+Therefore, 
+
+u⋆t (x, x(i))au⋆ 
+
+> t
+
+(x; x(i)) + ct(u⋆; x(i)) − ct(u⋆; x) = − λ
+
+1 − t + o(1) , (71) while 
+
+− u⋆t (x(i), x)au⋆ 
+
+> t
+
+(x; x(i))= −
+
+ 11 − t + o(1) 
+
+
+
+(λ − τ log(1 − t) + o(τ )) = − λ
+
+1 − t + o(1) .
+
+(72) Thus the desired identity holds in the low-temperature limit. 
+
+Case 2: xi = x⋆i . Flipping coordinate i moves x farther from x⋆. From Proposition 3.1, 
+
+u⋆t (x(i), x) = 0 + o(1) , u⋆t (x, x(i)) = 11 − t + o(1) . (73) Moreover, from the low-temperature expansion of Vt,
+
+Vt(x) − Vt(x(i)) = −λ + τ log(1 − t) + o(τ ). (74) Thus 
+
+au⋆ 
+
+> t
+
+(x; x(i)) = −λ + τ log(1 − t) + o(τ ). (75) Since x(i) has one more mismatched coordinate than x, we have 
+
+ct(u⋆; x(i)) − ct(u⋆; x) = λ
+
+1 − t + o(1) . (76) Therefore, 
+
+u⋆t (x, x(i))au⋆ 
+
+> t
+
+(x; x(i)) + ct(u⋆; x(i)) − ct(u⋆; x)=
+
+ 11 − t + o(1) 
+
+
+
+(−λ + τ log(1 − t) + o(τ )) + λ
+
+1 − t + o(1) = o(1) ,
+
+(77) while 
+
+−u⋆t (x(i), x)au⋆ 
+
+> t
+
+(x; x(i)) = o(1) . (78) Thus the desired identity again holds in the low-temperature limit. Combining the two cases gives 
+
+u⋆t (x, x(i))au⋆ 
+
+> t
+
+(x; x(i)) + ct(u⋆; x(i)) − ct(u⋆; x) − u⋆t (x(i), x)au⋆ 
+
+> t
+
+(x; x(i)) + o(1) , (79) as τ → 0. Equivalently, 
+
+lim  
+
+> τ→0
+
+h
+
+u⋆t (x, x(i))au⋆ 
+
+> t
+
+(x; x(i)) + ct(u⋆; x(i)) − ct(u⋆; x) + u⋆t (x(i), x)au⋆ 
+
+> t
+
+(x; x(i))
+
+i
+
+= 0 . (80) This proves Proposition 3.3. □
+
+16 Combinatorial Adjoint Matching 
+
+A.4. Remark: Applicability of Proposition 3.3 
+
+We note that Proposition 3.3 describes the asymptotic behavior in the low-temperature regime with a fixed intermediate time 
+
+t < 1. In particular, the proposition does not necessarily hold near the terminal time t → 1.Recall that 
+
+Vt(x) = g⋆ − τ log Epbase 
+
+
+
+exp 
+
+ g⋆ − g(X1)
+
+τ
+
+
+
+Xt = x
+
+
+
+. (81) In the proof of Proposition 3.1, we showed that the contribution of the closest minimizer x⋆ scales as 
+
+(1 − t)d exp 
+
+
+
+− dλ τ
+
+
+
+(1 + o(1)) , (82) where d = ∥x − x⋆∥1 is the Hamming distance to the closest minimizer. For fixed t < 1 and sufficiently small τ , this term dominates the expectation, leading to the global shortest-path objective 
+
+Vt(x) ≈ g⋆ + dλ. (83) However, for any fixed τ > 0, if t → 1, then the factor (1 − t)d vanishes. In this regime, there exist terminal states X1 such that 
+
+(1 − t) ≪ exp 
+
+ g⋆ − g(X1)
+
+τ
+
+
+
+, (84) so the dominant contribution to the expectation no longer comes from the closest minimizer. Instead, the expectation becomes dominated by terminal states that are locally reachable near time 1. As a result, 
+
+Vt(x) ≈ g(x), t → 1. (85) Therefore, the value function interpolates between two regimes: 
+
+Vt(x) ≈
+
+
+
+g⋆ + dλ, (1 − t) ≫ exp 
+
+ g⋆−g(X1)
+
+> τ
+
+
+
+,g(x), (1 − t) ≪ exp 
+
+ g⋆−g(X1)
+
+> τ
+
+
+
+. (86) The former corresponds to a global shortest-path objective toward the optimal solution, while the latter corresponds to a purely local improvement objective. Consequently, the discrete adjoint also interpolates between these two extremes. In the global regime, 
+
+at(x(i); x) ≈ (−1) xi⊕x⋆i +1 λ, (87) which depends only on whether coordinate i agrees with the closest minimizer. In contrast, near the terminal time, 
+
+at(x(i); x) ≈ g(x(i)) − g(x), (88) which reduces to the local one-step improvement objective. The recursion in Proposition 3.3 therefore captures the global low-temperature structure away from the terminal boundary, whereas near t = 1 , the adjoint naturally degenerates to the local terminal objective used in combinatorial local search. In our approximation, we implicitly assume the consistency between the local improvement direction and the global improvement direction in Equation 22, so additional design should be introduced to prevent the local optima (e.g., the regularization) if the assumption is severely violated. 
+
+# B. Additional Experimental Details 
+
+B.1. Summary of Baseline Choices 
+
+We summarize all baselines used in our experiments below. 17 Combinatorial Adjoint Matching 
+
+Maximum Independent Set (MIS). For MIS, we consider three categories of baselines. • OR solvers : Gurobi (Gurobi Optimization, LLC, 2023) and KaMIS (Großmann et al., 2023). • Supervised methods : INTEL (Li et al., 2018), DGL (B¨ other et al., 2022), and DIFUSCO. • Unsupervised methods : DIMES, DiffUCO (Sanokowski et al., 2024), SDDS (Sanokowski et al., 2025), and RLNN (Feng & Yang, 2025). 
+
+Traveling Salesman Problem (TSP). For TSP, we adopt the following baselines. • OR solvers : Concorde (Applegate et al., 2006) and LKH-3. • Supervised methods : GCN (Joshi et al., 2019), DIFUSCO (Sun et al., 2022), and FMIP (Li et al., 2025). • Unsupervised / RL-based methods : AM (Kool et al., 2019), POMP (Kwon et al., 2020), DIMES (Qiu et al., 2022), and SDDS (Sanokowski et al., 2025). For SDDS, we use the forward-KL variant based on importance sampling. Following Sanokowski et al. (2024), the denoising distribution is selected from either Bernoulli or Annealing , and we report the variant that achieves the best performance on each dataset (mostly Annealing ). For non-diffusion baselines, we directly report the results from the original papers (Sun & Yang, 2023; Feng & Yang, 2025). All diffusion-based baselines are re-implemented and trained under a unified experimental setup. Several variants and follow-up models of these diffusion baselines are discussed in Section 6. These approaches typically introduce additional optimizations through search heuristics or hybrid supervised–unsupervised objectives. Since our primary goal is to evaluate the effectiveness of the proposed diffusion paradigms, particularly as unsupervised frameworks, we do not include direct comparisons with these variants. Such techniques are largely orthogonal and could, in principle, be integrated into our method as well. 
+
+B.2. Implementation Details 
+
+We summarize the implementation details used for training and evaluating all diffusion-based models. 
+
+MIS. Following Sanokowski et al. (2024); Qiu et al. (2022), we generate 4,000 training instances and 1,000 testing instances for RB graphs at both scales. For ER graphs, we use 16,284 training instances, together with 128 test instances for ER-[700–800] and 16 test instances for ER-[9000–11000]. KaMIS (Großmann et al., 2023) is used to generate supervision for supervised baselines. All diffusion-based methods employ an encode–process–decode graph neural network architecture adapted from prior diffusion-based combinatorial optimization frameworks (Sanokowski et al., 2024; 2025). We omit the timestep embedding in all models, as we empirically observe that it consistently degrades performance. The encoder maps the scalar node state into a hidden representation: 
+
+H0 = Encoder( X), (89) where X ∈ RN ×1 denotes the current solution state. The encoder is implemented as a two-layer MLP with ReLU activations and LayerNorm. For message passing, we employ a linear neighborhood aggregation operator with normalized adjacency. Let 
+
+ˆA = A + I, (90) and ˜A = D−1/2 ˆA, (91) where D denotes the degree matrix associated with ˆA.18 Combinatorial Adjoint Matching 
+
+At layer l, neighbor messages are computed as 
+
+Ml = ˜AW l
+
+> msg
+
+Hl, (92) and concatenated with the current node representation: 
+
+Zl = MLP l [Hl, Ml]. (93) The hidden states are then updated via 
+
+Hl+1 = LayerNorm  Wl
+
+> node
+
+Hl + Zl . (94) Unless otherwise specified, we use 8 message-passing layers with hidden dimension 64. For RB-[800–1200], we use 6 layers to improve computational efficiency. GraphNorm (Cai et al., 2021) is applied after neighborhood aggregation at every layer. The final node-wise logits are produced by a two-layer MLP decoder followed by a linear prediction head. For optimization, DIFUSCO, RLNN, and CAM use AdamW (Loshchilov & Hutter, 2019). DiffUCO and SDDS follow the original implementation (Sanokowski et al., 2024) and use RAdam (Liu et al., 2020) with gradient clipping at a maximum norm of 1.0. Weight decay is fixed to 1 × 10 −4 for all methods, while learning rates are selected from the range [10 −4, 10 −3].For unsupervised diffusion models, the temperature parameter τ is linearly annealed from an initial value τ0 ∈ { 0.1, 0.05 }
+
+to 0 throughout training. During inference, all methods use 50 diffusion steps and 20 independent sampling runs. For ER-[9000–11000], we increase the sampling budget to 200 diffusion steps. 
+
+TSP. All TSP models follow the default configuration of DIFUSCO (Sun & Yang, 2023) unless otherwise specified. Following Sun & Yang (2023), we generate 128,000 training instances for TSP-500 and 64,000 training instances for TSP-1000. LKH-3 (Helsgaun, 2017) is used to generate supervision for DIFUSCO and FMIP. We evaluate all methods on 128 test instances. For the model architecture, we adopt a 12-layer Anisotropic Graph Neural Network with hidden dimension 256. Optimization is performed using AdamW with learning rate 2 × 10 −4 and weight decay 1 × 10 −4. All models are trained for 50 epochs. The batch size is set to 8 for TSP-500 and 4 for TSP-1000. During training, all unsupervised diffusion models generate 4 trajectories using 10 diffusion steps. DIFUSCO uses 1,000 diffusion steps following the original implementation. A linear diffusion schedule is used for both DIFUSCO and FMIP. During inference, all methods use 10 diffusion steps with 16 independent samples. We further apply 1,000 iterations of 2-OPT local search for both TSP-500 and TSP-1000. For DIFUSCO and FMIP, a cosine diffusion schedule is adopted at test time. The experimental setups for Max Cut and CVRP largely follow those used for MIS and TSP, respectively. Detailed implementation choices are provided in our official codebase. 
+
+# C. Additional Training Techniques 
+
+This section describes several auxiliary training techniques that we explored during the development of CAM. Although the final results reported in the main paper are obtained using the architectures adopted from prior diffusion-based CO solvers, we found the following techniques useful for improving optimization stability and mitigating local-optima issues under certain training settings. 
+
+C.1. Update Magnitude Regularization 
+
+Since CAM is ultimately driven by local improvement signals, the optimization process may occasionally become trapped in poor local optima, particularly during the early stages of training. Following Feng & Yang (2025), one way to encourage exploration is to regularize the expected update magnitude at each diffusion step. 19 Combinatorial Adjoint Matching 
+
+Specifically, we replace the transition-rate penalty with the following regularization term: 
+
+λ∥uθt (Xt)∥1 ⇒ α ∥uθt (Xt)∥1 − ∆2, (95) which encourages the expected number of coordinate flips to remain close to a target value ∆ > 0, with α controlling the strength of the penalty. Interestingly, when ∆ = ∥X0 − x∗∥1/K , with x∗ the closest minimizer to X0, the optimality condition remains unchanged, preserving the theoretical properties established in Section 3. In practice, this regularization encourages exploration by preventing the transition rates from collapsing prematurely during training. 
+
+C.2. Balancing Local and Global Training Objectives 
+
+Although CAM propagates trajectory-level optimization signals, training may still suffer from insufficient intermediate feedback in some settings. To alleviate this issue, we consider a hybrid objective that interpolates between local and global supervision. Specifically, we partition the diffusion trajectory into L equal segments: 
+
+0, 1
+
+> L
+
+,  1 
+
+> L
+
+, 2
+
+> L
+
+, · · · ,  L−1 
+
+> L
+
+, 1, (96) and apply the CAM objective independently within each segment. Concretely, this requires evaluating the flip-gradient at the terminal state of every segment, resulting in L terminal evaluations instead of a single evaluation at t = 1 .This modification introduces additional local optimization signals while preserving the overall trajectory-level structure of CAM, thereby providing a practical trade-off between optimization stability and feedback efficiency. 20

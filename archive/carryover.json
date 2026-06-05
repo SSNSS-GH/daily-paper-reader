@@ -1,54 +1,12 @@
 {
-  "generated_at": "2026-06-04T21:24:58.502509+00:00",
-  "updated_date": "20260604",
+  "generated_at": "2026-06-05T21:17:37.208241+00:00",
+  "updated_date": "20260605",
   "carryover_days": 9,
   "tag_states": {
     "symbolic-reg": {
-      "updated_date": "20260604",
+      "updated_date": "20260605",
       "carryover_days": 9,
       "items": [
-        {
-          "id": "2606.00336v1",
-          "source": "arxiv",
-          "title": "From Noise to Control: Parameterized Diffusion Policies",
-          "abstract": "We propose Parameterized Diffusion Policy (PDP), a framework for learning diffusion policies conditioned on low-dimensional, continuous parameters embedded in a learned behavior manifold. By constructing this manifold so that distances between latent representations reflect the semantic similarity between physical trajectories, we transform diffusion from a mechanism for stochastic diversity into a precise and optimizable tool for behavior steering. Our approach enables smooth interpolation between known strategies and efficient adaptation to novel constraints without updating policy weights. We demonstrate that PDP significantly improves adaptation performance on complex multimodal benchmarks in both simulated and real-robot experiments compared to standard diffusion policies, particularly in scenarios requiring the synthesis of novel behaviors.",
-          "authors": [
-            "Renhao Zhang",
-            "Haotian Fu",
-            "Mingxi Jia",
-            "George Konidaris",
-            "Yilun Du",
-            "Bruno Castro da Silva"
-          ],
-          "primary_category": "cs.AI",
-          "categories": [
-            "cs.AI",
-            "cs.LG"
-          ],
-          "published": "2026-05-29T20:21:50+00:00",
-          "link": "https://arxiv.org/pdf/2606.00336v1",
-          "tags": [
-            "keyword:symbolic-reg",
-            "query:symbolic-reg"
-          ],
-          "llm_score": 8.0,
-          "llm_evidence_en": "Parameterized diffusion policy framework for behavior steering",
-          "llm_evidence_cn": "参数化扩散策略框架用于行为引导",
-          "llm_evidence": "参数化扩散策略框架用于行为引导",
-          "canonical_evidence": "参数化扩散策略框架用于行为引导",
-          "llm_tldr_en": "Proposes Parameterized Diffusion Policy (PDP) which conditions diffusion on low-dimensional parameters, enabling smooth interpolation and efficient adaptation without weight updates, tested on robot benchmarks.",
-          "llm_tldr_cn": "针对现有扩散模型只能生成随机多样性而难以精确控制的问题，提出参数化扩散策略（PDP），通过学习行为流形将扩散过程转化为可优化的行为引导工具。该方法支持无需更新权重的平滑插值与高效适应，在模拟与真实机器人复杂多模态基准上显著提升了适应性能。",
-          "llm_tldr": "针对现有扩散模型只能生成随机多样性而难以精确控制的问题，提出参数化扩散策略（PDP），通过学习行为流形将扩散过程转化为可优化的行为引导工具。该方法支持无需更新权重的平滑插值与高效适应，在模拟与真实机器人复杂多模态基准上显著提升了适应性能。",
-          "llm_tags": [
-            "query:symbolic-reg"
-          ],
-          "matched_query_tag": "query:symbolic-reg",
-          "matched_query_text": "diffusion probabilistic models for generative tasks",
-          "matched_requirement_id": "req-4",
-          "selection_source": "carryover_cache",
-          "paper_id": "2606.00336v1",
-          "carry_days": 1
-        },
         {
           "id": "2606.00840v1",
           "source": "arxiv",
@@ -70,13 +28,13 @@
             "query:symbolic-reg"
           ],
           "llm_score": 8.0,
-          "llm_evidence_en": "evaluating RL generalization with neural certificates",
-          "llm_evidence_cn": "利用神经证书评估强化学习泛化",
-          "llm_evidence": "利用神经证书评估强化学习泛化",
-          "canonical_evidence": "利用神经证书评估强化学习泛化",
-          "llm_tldr_en": "Proposes a logic-driven framework with neural certificate functions to evaluate RL generalization to unseen tasks.",
-          "llm_tldr_cn": "该论文提出一个逻辑驱动的框架，使用神经证书函数验证强化学习算法生成的轨迹，从而评估其泛化能力。在连续控制环境中，该方法成功区分了不同RL算法的泛化性能，为RL泛化评估提供了可认证的定量指标。",
-          "llm_tldr": "该论文提出一个逻辑驱动的框架，使用神经证书函数验证强化学习算法生成的轨迹，从而评估其泛化能力。在连续控制环境中，该方法成功区分了不同RL算法的泛化性能，为RL泛化评估提供了可认证的定量指标。",
+          "llm_evidence_en": "RL generalization evaluation framework using neural certificate functions",
+          "llm_evidence_cn": "使用神经证书函数的强化学习泛化评估框架",
+          "llm_evidence": "使用神经证书函数的强化学习泛化评估框架",
+          "canonical_evidence": "使用神经证书函数的强化学习泛化评估框架",
+          "llm_tldr_en": "Presents a logic-driven framework to evaluate RL generalization using neural certificate functions that validate trajectories.",
+          "llm_tldr_cn": "强化学习泛化评估缺乏可靠方法。本文提出基于神经证书函数的逻辑驱动框架，定义归纳可达-避障任务族，通过验证轨迹条件来评估泛化。在多种可泛化RL算法上展示了有效性，证书函数百分比与泛化能力相关。",
+          "llm_tldr": "强化学习泛化评估缺乏可靠方法。本文提出基于神经证书函数的逻辑驱动框架，定义归纳可达-避障任务族，通过验证轨迹条件来评估泛化。在多种可泛化RL算法上展示了有效性，证书函数百分比与泛化能力相关。",
           "llm_tags": [
             "query:symbolic-reg"
           ],
@@ -85,87 +43,6 @@
           "matched_requirement_id": "req-3",
           "selection_source": "carryover_cache",
           "paper_id": "2606.00840v1",
-          "carry_days": 1
-        },
-        {
-          "id": "2606.03347v1",
-          "source": "arxiv",
-          "title": "AugMask: Training Diffusion Models on Incomplete Tabular Data via Stochastic Augmentation and Masking",
-          "abstract": "Score-based diffusion models have emerged as prominent deep generative models; however, their application to tabular data remains challenging because their backbones assume fully specified inputs, whereas real-world tabular data often contain missing values. We propose AugMask, a plug-and-play training framework that adapts missing-unaware backbones to incomplete data by separating conditioning from supervision. AugMask 1) constructs numeric inputs via conditional stochastic augmentation using lightweight auxiliary models, and 2) applies denoising supervision only to observed coordinates. In effect, augmented missing entries serve as uncertain conditioning context rather than training targets. We connect this training rule to a Rao--Blackwellized objective and show that marginalizing missing entries yields a variance-weighted sensitivity penalty, discouraging over-reliance on uncertain completions. Across diverse datasets and missingness regimes, AugMask enables standard diffusion-based tabular generators to outperform specialized missing-aware baselines.",
-          "authors": [
-            "Jungkyu Kim",
-            "Taeyoung Park",
-            "Kibok Lee"
-          ],
-          "primary_category": "cs.LG",
-          "categories": [
-            "cs.LG",
-            "cs.AI",
-            "stat.ML"
-          ],
-          "published": "2026-06-02T08:57:38+00:00",
-          "link": "https://arxiv.org/pdf/2606.03347v1",
-          "tags": [
-            "keyword:symbolic-reg",
-            "query:symbolic-reg"
-          ],
-          "llm_score": 8.0,
-          "llm_evidence_en": "Diffusion model training for incomplete tabular data",
-          "llm_evidence_cn": "面向不完整表格数据的扩散模型训练",
-          "llm_evidence": "面向不完整表格数据的扩散模型训练",
-          "canonical_evidence": "面向不完整表格数据的扩散模型训练",
-          "llm_tldr_en": "AugMask adapts score-based diffusion models to incomplete tabular data via conditional stochastic augmentation and masked denoising, achieving robust generation without imputation.",
-          "llm_tldr_cn": "该论文针对扩散模型在处理不完整表格数据时的局限性，提出了AugMask框架，通过条件随机增强构建输入，并仅对观测坐标施加去噪监督，使缺失条目作为不确定条件而非训练目标。实验证明该方法能有效利用缺失数据生成高质量表格样本，扩展了扩散模型在现实场景中的应用。",
-          "llm_tldr": "该论文针对扩散模型在处理不完整表格数据时的局限性，提出了AugMask框架，通过条件随机增强构建输入，并仅对观测坐标施加去噪监督，使缺失条目作为不确定条件而非训练目标。实验证明该方法能有效利用缺失数据生成高质量表格样本，扩展了扩散模型在现实场景中的应用。",
-          "llm_tags": [
-            "query:symbolic-reg"
-          ],
-          "matched_query_tag": "query:symbolic-reg",
-          "matched_query_text": "diffusion probabilistic models for generative tasks",
-          "matched_requirement_id": "req-4",
-          "selection_source": "carryover_cache",
-          "paper_id": "2606.03347v1",
-          "carry_days": 1
-        },
-        {
-          "id": "2606.00837v1",
-          "source": "arxiv",
-          "title": "Coarse-to-Fine Compositional Diffusion for Long-Horizon Planning",
-          "abstract": "Diffusion models provide strong priors for generating structured data, but many tasks require outputs beyond the scale on which these models are typically trained. Compositional generation addresses this by composing overlapping local plans from a pretrained short-horizon prior into a long-horizon output. However, standard composition primarily enforces agreement between neighboring local plans, yielding local consistency without directly specifying the global structure of the full composition. As a result, locally compatible plans may still form an implausible route, task sequence, or temporal evolution. Existing methods improve global coherence by repeatedly propagating local consistency signals or by adding inference-time optimization, but these procedures become expensive as the number or dimensionality of local plans increases. We propose Coarse-to-Fine Compositional Diffusion (CoFi), an inference-time sampler that separates global structure formation from local detail refinement. CoFi first aligns local denoised estimates around a shared coarse structure, producing a global scaffold that captures the long-range task-level arrangement. It then diffuses this scaffold to an intermediate noise level and denoises it with the same pretrained local prior, restoring local fine structure while preserving the scaffold-induced global coherence. Across long-horizon robotic planning, panoramic image generation, and long video generation, CoFi not only improves both global coherence and local sample quality over prior compositional baselines, but also requires 2-8x fewer denoiser evaluations.",
-          "authors": [
-            "Byoungwoo Park",
-            "Utkarsh A. Mishra",
-            "Jaemoo Choi",
-            "Juho Lee",
-            "Yongxin Chen"
-          ],
-          "primary_category": "cs.RO",
-          "categories": [
-            "cs.RO",
-            "cs.LG"
-          ],
-          "published": "2026-05-30T18:26:53+00:00",
-          "link": "https://arxiv.org/pdf/2606.00837v1",
-          "tags": [
-            "keyword:symbolic-reg",
-            "query:symbolic-reg"
-          ],
-          "llm_score": 8.0,
-          "llm_evidence_en": "Compositional diffusion for long-horizon planning",
-          "llm_evidence_cn": "用于长期规划的组合式扩散",
-          "llm_evidence": "用于长期规划的组合式扩散",
-          "canonical_evidence": "用于长期规划的组合式扩散",
-          "llm_tldr_en": "Coarse-to-fine compositional diffusion generates globally coherent long-horizon plans by refining global structure from overlapping local plans.",
-          "llm_tldr_cn": "该论文针对扩散模型生成长序列时局部一致但全局不合理的问题，提出从粗到细的组合扩散方法。通过引入全局隐变量来捕捉整体结构，并将局部计划组合到隐变量调控下，实现全局连贯的长程规划。在机器人任务规划等实验中，生成计划的全局成功率显著提升。",
-          "llm_tldr": "该论文针对扩散模型生成长序列时局部一致但全局不合理的问题，提出从粗到细的组合扩散方法。通过引入全局隐变量来捕捉整体结构，并将局部计划组合到隐变量调控下，实现全局连贯的长程规划。在机器人任务规划等实验中，生成计划的全局成功率显著提升。",
-          "llm_tags": [
-            "query:symbolic-reg"
-          ],
-          "matched_query_tag": "query:symbolic-reg",
-          "matched_query_text": "diffusion probabilistic models for generative tasks",
-          "matched_requirement_id": "req-4",
-          "selection_source": "carryover_cache",
-          "paper_id": "2606.00837v1",
           "carry_days": 1
         },
         {
@@ -188,13 +65,13 @@
             "query:symbolic-reg"
           ],
           "llm_score": 8.0,
-          "llm_evidence_en": "recurrent transformer architecture parameter-efficient",
-          "llm_evidence_cn": "循环Transformer架构参数高效",
-          "llm_evidence": "循环Transformer架构参数高效",
-          "canonical_evidence": "循环Transformer架构参数高效",
-          "llm_tldr_en": "Presents CART, a parameter-efficient recurrent transformer that reuses a core block with learned LTI gate for stability, enabling training on single consumer GPU.",
-          "llm_tldr_cn": "该论文提出CART（上下文锚定循环Transformer），通过共享核心块并引入学习线性时不变门控保持稳定性，大幅减少参数和计算量。CART仅用单张消费级GPU即可训练，在语言建模任务上达到与大型Transformer相当的性能，为资源受限场景下的高效语言模型提供了新架构。",
-          "llm_tldr": "该论文提出CART（上下文锚定循环Transformer），通过共享核心块并引入学习线性时不变门控保持稳定性，大幅减少参数和计算量。CART仅用单张消费级GPU即可训练，在语言建模任务上达到与大型Transformer相当的性能，为资源受限场景下的高效语言模型提供了新架构。",
+          "llm_evidence_en": "proposes a recurrent transformer architecture for sequence generation",
+          "llm_evidence_cn": "提出一种用于序列生成的循环Transformer架构",
+          "llm_evidence": "提出一种用于序列生成的循环Transformer架构",
+          "canonical_evidence": "提出一种用于序列生成的循环Transformer架构",
+          "llm_tldr_en": "Presents CART, a parameter-efficient recurrent transformer that reuses a core block with frozen KV tensors, achieving stability via a learned LTI gate.",
+          "llm_tldr_cn": "针对现有循环Transformer计算冗余和稳定性差的问题，提出CART架构，通过预计算并冻结KV张量，让循环核心交叉注意力于其上，并引入可学习LTI门控确保稳定，在单GPU上高效训练。",
+          "llm_tldr": "针对现有循环Transformer计算冗余和稳定性差的问题，提出CART架构，通过预计算并冻结KV张量，让循环核心交叉注意力于其上，并引入可学习LTI门控确保稳定，在单GPU上高效训练。",
           "llm_tags": [
             "query:symbolic-reg"
           ],
@@ -203,54 +80,6 @@
           "matched_requirement_id": "req-2",
           "selection_source": "carryover_cache",
           "paper_id": "2606.01495v1",
-          "carry_days": 1
-        },
-        {
-          "id": "2606.04527v1",
-          "source": "arxiv",
-          "title": "Echo-Infinity: Learning Evolving Memory for Real-Time Infinite Video Generation",
-          "abstract": "We present Echo Infinity, an autoregressive (AR) framework towards real-time infinite video generation that employs a learnable evolving memory to dynamically filter, abstract, and compress any-length history at constant cost. Existing methods mainly curate memory with predefined KV-cache schedules, fixed-ratio heuristic compression, or inference-time RoPE adaptation. These designs inevitably lose historical information and amplify compounding errors due to their limited cache window and ignorance of autoregressive generation noise. Inspired by human memory consolidation, Echo-Infinity replaces handcrafted memory curation with learnable Memory Query, which are updated by attention and a gating mechanism when past frames are evicted from the local window. The queries are optimized end-to-end with the video diffusion transformers (DiTs), forming an evolving memory that supports arbitrary compression ratios with constant computation independent of video length. They also act as a generalizable generation prior, improving quality even when only the optimized initial state is used. We further introduce Unified Relative RoPE Recipe, which anchors the sink frames to start from id 0 and lets the newest frame id grow at most to the DiTs' pretrained maximum temporal RoPE id throughout training and inference, freeing the model from the finite RoPE constraint and closing the train-test RoPE extrapolation gap. In long and short video generation, Echo-Infinity achieves state-of-the-art performance, and, to our knowledge, demonstrates promising 24-hour (>1.3 M frames) real-time rollouts for the first time, suggesting a practical path toward infinite video generation.",
-          "authors": [
-            "Yuxuan Bian",
-            "Zeyue Xue",
-            "Songchun Zhang",
-            "Shiyi Zhang",
-            "Weiyang Jin",
-            "Yaowei Li",
-            "Junhao Zhuang",
-            "Haoran Li",
-            "Jie Huang",
-            "Haoyang Huang",
-            "Nan Duan",
-            "Qiang Xu"
-          ],
-          "primary_category": "cs.MM",
-          "categories": [
-            "cs.MM",
-            "cs.CV",
-            "cs.GR"
-          ],
-          "published": "2026-06-03T07:09:01+00:00",
-          "link": "https://arxiv.org/pdf/2606.04527v1",
-          "tags": [
-            "keyword:symbolic-reg"
-          ],
-          "llm_score": 8.0,
-          "llm_evidence_en": "autoregressive transformer for video sequence generation",
-          "llm_evidence_cn": "用于视频序列生成的自回归Transformer",
-          "llm_evidence": "用于视频序列生成的自回归Transformer",
-          "canonical_evidence": "用于视频序列生成的自回归Transformer",
-          "llm_tldr_en": "Echo-Infinity proposes an autoregressive framework with learnable evolving memory for real-time infinite video generation, addressing memory limitations and compounding errors.",
-          "llm_tldr_cn": "针对现有视频生成方法中固定缓存窗口导致历史信息丢失和误差累积的问题，本文提出Echo-Infinity，一种基于可学习演化记忆的自回归框架。该方法通过注意力与门控机制动态筛选和压缩历史信息，实现常数成本的任意长度视频生成。实验表明，该框架在保持实时性的同时显著提升了长视频生成的连贯性和质量，为无限视频生成提供了新思路。",
-          "llm_tldr": "针对现有视频生成方法中固定缓存窗口导致历史信息丢失和误差累积的问题，本文提出Echo-Infinity，一种基于可学习演化记忆的自回归框架。该方法通过注意力与门控机制动态筛选和压缩历史信息，实现常数成本的任意长度视频生成。实验表明，该框架在保持实时性的同时显著提升了长视频生成的连贯性和质量，为无限视频生成提供了新思路。",
-          "llm_tags": [
-            "query:symbolic-reg"
-          ],
-          "matched_query_tag": "query:symbolic-reg",
-          "matched_query_text": "autoregressive transformer model for sequence generation",
-          "matched_requirement_id": "req-2",
-          "selection_source": "carryover_cache",
-          "paper_id": "2606.04527v1",
           "carry_days": 1
         },
         {
@@ -290,7 +119,7 @@
           "matched_requirement_id": "req-4",
           "selection_source": "carryover_cache",
           "paper_id": "2606.04945v1",
-          "carry_days": 1
+          "carry_days": 2
         },
         {
           "id": "2606.00880v1",
@@ -317,13 +146,13 @@
             "query:symbolic-reg"
           ],
           "llm_score": 8.0,
-          "llm_evidence_en": "studies continual reinforcement learning and task diversity effects",
-          "llm_evidence_cn": "研究持续强化学习及任务多样性的影响",
-          "llm_evidence": "研究持续强化学习及任务多样性的影响",
-          "canonical_evidence": "研究持续强化学习及任务多样性的影响",
-          "llm_tldr_en": "Introduces Banyan, a GPU-accelerated continual RL domain, and investigates how task diversity affects continual learning and zero-shot generalization.",
-          "llm_tldr_cn": "持续强化学习旨在使智能体在不断变化的任务分布中持续学习。本文引入Banyan平台，将任务多样性分解为地图布局、对象交互和子目标层次三个独立维度，研究任务多样性对持续学习的影响。实验发现，任务多样性虽然能促进零样本泛化，但在某些情况下会抑制持续学习能力，强调了训练策略设计的重要性。",
-          "llm_tldr": "持续强化学习旨在使智能体在不断变化的任务分布中持续学习。本文引入Banyan平台，将任务多样性分解为地图布局、对象交互和子目标层次三个独立维度，研究任务多样性对持续学习的影响。实验发现，任务多样性虽然能促进零样本泛化，但在某些情况下会抑制持续学习能力，强调了训练策略设计的重要性。",
+          "llm_evidence_en": "continual reinforcement learning",
+          "llm_evidence_cn": "持续强化学习",
+          "llm_evidence": "持续强化学习",
+          "canonical_evidence": "持续强化学习",
+          "llm_tldr_en": "Introduces Banyan, a continual RL benchmark, and finds that task diversity improves zero-shot transfer but hinders continual learning under shifting distributions.",
+          "llm_tldr_cn": "持续强化学习中任务多样性对零样本泛化有益，但其对持续学习能力的影响尚不清楚。本文提出加速持续RL基准Banyan，将多样性分解为地图、物体和子目标层次三个维度。实验发现，任务多样性有助于系统性转移，但会抑制持续学习性能，揭示了多样性在持续RL中的双刃剑效应。",
+          "llm_tldr": "持续强化学习中任务多样性对零样本泛化有益，但其对持续学习能力的影响尚不清楚。本文提出加速持续RL基准Banyan，将多样性分解为地图、物体和子目标层次三个维度。实验发现，任务多样性有助于系统性转移，但会抑制持续学习性能，揭示了多样性在持续RL中的双刃剑效应。",
           "llm_tags": [
             "query:symbolic-reg"
           ],
@@ -363,13 +192,13 @@
             "query:symbolic-reg"
           ],
           "llm_score": 8.0,
-          "llm_evidence_en": "proposes a skill creation framework integrated with policy optimization in agentic RL",
-          "llm_evidence_cn": "提出与策略优化集成的智能体强化学习技能创建框架",
-          "llm_evidence": "提出与策略优化集成的智能体强化学习技能创建框架",
-          "canonical_evidence": "提出与策略优化集成的智能体强化学习技能创建框架",
-          "llm_tldr_en": "ReSkill reconciles skill creation with policy optimization in agentic RL by embedding assertion-driven skill creation, skill-driven exploration, and skill-policy co-adaptation into GRPO.",
-          "llm_tldr_cn": "智能体强化学习中，策略难以积累可复用的技能。本文提出ReSkill，将技能创建融入策略优化循环，利用GRPO的组内结构自然嵌入三个机制：断言驱动的技能创建、技能驱动的探索和技能-策略协同适应。该方法在几乎不增加额外开销的情况下，使智能体能够系统地构建和利用可迁移技能，提升泛化性能。",
-          "llm_tldr": "智能体强化学习中，策略难以积累可复用的技能。本文提出ReSkill，将技能创建融入策略优化循环，利用GRPO的组内结构自然嵌入三个机制：断言驱动的技能创建、技能驱动的探索和技能-策略协同适应。该方法在几乎不增加额外开销的情况下，使智能体能够系统地构建和利用可迁移技能，提升泛化性能。",
+          "llm_evidence_en": "RL-in-the-loop skill creation for policy optimization",
+          "llm_evidence_cn": "强化学习回路中的技能创建与策略优化",
+          "llm_evidence": "强化学习回路中的技能创建与策略优化",
+          "canonical_evidence": "强化学习回路中的技能创建与策略优化",
+          "llm_tldr_en": "ReSkill reconciles skill creation with policy optimization in agentic RL by embedding assertion-driven skill creation into GRPO, improving generalization.",
+          "llm_tldr_cn": "ReSkill提出了一种强化学习在环的技能创建框架，将技能创建与策略优化协调起来。通过利用GRPO的群体结构嵌入三种机制，在无额外开销的情况下系统性地积累可重用策略，提升跨任务泛化能力。实验证明其有效性。",
+          "llm_tldr": "ReSkill提出了一种强化学习在环的技能创建框架，将技能创建与策略优化协调起来。通过利用GRPO的群体结构嵌入三种机制，在无额外开销的情况下系统性地积累可重用策略，提升跨任务泛化能力。实验证明其有效性。",
           "llm_tags": [
             "query:symbolic-reg"
           ],
@@ -381,35 +210,37 @@
           "carry_days": 1
         },
         {
-          "id": "2606.00367v1",
+          "id": "2606.02132v2",
           "source": "arxiv",
-          "title": "Reinforcement Learning with Pairwise Preferences in Long-Term Decision Problems",
-          "abstract": "Reinforcement learning problems typically define the goal as maximizing the expected value of a scalar reward function. But, pairwise preferences are often easier to specify than scalar rewards, and they express certain goals that scalar rewards cannot. Methods for reinforcement learning with pairwise preferences have thus received growing interest. Unfortunately, these methods are inefficient in problems with long time horizons, and they lack guarantees on the performance of Markov policies relative to history-dependent policies, which bridge the theory and practice of reinforcement learning. We therefore propose the \\textit{Markov decision contest} as a new problem model for reinforcement learning with pairwise preferences. We prove that stationary Markov policies are optimal among all history-dependent policies, that solving a Markov decision contest exactly is in P, and that a simple iterative algorithm converges to an optimal policy at a sublinear rate. Lastly, in a set of high-dimensional decision problems with long time horizons, we show that our approximate algorithm is significantly more learning-efficient than prior work.",
+          "title": "Learning When Not to Act: Mitigating Tool Abuse in Agentic Reinforcement Learning",
+          "abstract": "Agentic reinforcement learning can induce tool abuse, where models overuse external tools even for queries solvable by internal reasoning. Existing approaches mitigate this issue with uniform tool-use penalties or hard limits, which reduce tool frequency but may also suppress useful tool-assisted exploration. We propose EAPO, an Efficient Agentic Policy Optimization framework that learns selective tool use. EAPO introduces tool-free trajectories into each rollout group, applies difficulty-aware reward shaping to penalize redundant tool calls mainly on easier queries, and uses confidence-aware token reweighting to improve policy learning. Across nine mathematical and knowledge-intensive reasoning benchmarks, EAPO consistently improves the accuracy efficiency trade-off on Qwen2.5-3B, Qwen2.5-7B, and Llama3.1-8B. Compared with GRPO, EAPO improves average performance by 10.45%, 7.27%, and 9.69%, while reducing average tool calls by 18.33%, 18.33%, and 24.59%, respectively. These results show that agents can learn when not to use tools without compromising tool-integrated reasoning.",
           "authors": [
-            "Jonathan Colaço Carr",
-            "Prakash Panangaden",
-            "Doina Precup",
-            "Benjamin Van Roy"
+            "Liuji Chen",
+            "Dianxing Tang",
+            "Xing Shi",
+            "Dingshuo Chen",
+            "Qiang Liu",
+            "Shu Wu",
+            "Liang Wang"
           ],
-          "primary_category": "cs.LG",
+          "primary_category": "cs.AI",
           "categories": [
-            "cs.LG",
             "cs.AI"
           ],
-          "published": "2026-05-29T21:16:25+00:00",
-          "link": "https://arxiv.org/pdf/2606.00367v1",
+          "published": "2026-06-01T11:58:55+00:00",
+          "link": "https://arxiv.org/pdf/2606.02132v2",
           "tags": [
             "keyword:symbolic-reg",
             "query:symbolic-reg"
           ],
           "llm_score": 8.0,
-          "llm_evidence_en": "reinforcement learning algorithms and applications",
-          "llm_evidence_cn": "强化学习算法与应用",
-          "llm_evidence": "强化学习算法与应用",
-          "canonical_evidence": "强化学习算法与应用",
-          "llm_tldr_en": "Introduces Markov decision contests as a new model for reinforcement learning with pairwise preferences, providing guarantees on Markov policies relative to history-dependent policies and improving efficiency in long-horizon problems.",
-          "llm_tldr_cn": "本文针对长期决策问题中成对偏好强化学习效率低、缺乏理论保证的问题，提出马尔可夫决策竞赛新模型。该模型证明马尔可夫策略相对于历史依赖策略的性能保证，并通过状态合并机制提升效率。理论分析和实验表明新方法在偏好表达能力和长期规划方面优于传统奖励建模方法。",
-          "llm_tldr": "本文针对长期决策问题中成对偏好强化学习效率低、缺乏理论保证的问题，提出马尔可夫决策竞赛新模型。该模型证明马尔可夫策略相对于历史依赖策略的性能保证，并通过状态合并机制提升效率。理论分析和实验表明新方法在偏好表达能力和长期规划方面优于传统奖励建模方法。",
+          "llm_evidence_en": "proposes a reinforcement learning framework to mitigate tool abuse",
+          "llm_evidence_cn": "提出强化学习框架缓解工具滥用问题",
+          "llm_evidence": "提出强化学习框架缓解工具滥用问题",
+          "canonical_evidence": "提出强化学习框架缓解工具滥用问题",
+          "llm_tldr_en": "Proposes EAPO framework for agentic RL that learns selective tool use via difficulty-aware reward shaping and confidence-aware token reweighting, improving accuracy across reasoning benchmarks.",
+          "llm_tldr_cn": "针对智能体强化学习中模型过度使用外部工具的问题，提出EAPO框架，通过引入无工具轨迹、难度感知奖励塑形和置信度感知标记重加权，学习选择性工具使用，在多个推理基准上提升准确率。",
+          "llm_tldr": "针对智能体强化学习中模型过度使用外部工具的问题，提出EAPO框架，通过引入无工具轨迹、难度感知奖励塑形和置信度感知标记重加权，学习选择性工具使用，在多个推理基准上提升准确率。",
           "llm_tags": [
             "query:symbolic-reg"
           ],
@@ -417,7 +248,173 @@
           "matched_query_text": "reinforcement learning algorithms and applications",
           "matched_requirement_id": "req-3",
           "selection_source": "carryover_cache",
-          "paper_id": "2606.00367v1",
+          "paper_id": "2606.02132v2",
+          "carry_days": 1
+        },
+        {
+          "id": "2606.02638v1",
+          "source": "arxiv",
+          "title": "SegTune: Structured and Fine-Grained Control for Song Generation",
+          "abstract": "Recent advances in neural song generation have enabled high-quality synthesis from lyrics and global textual prompts. However, most systems fail to model temporally varying attributes of songs, severely limiting fine-grained control over musical structure and dynamics. To address this, we propose SegTune, a Diffusion Transformer-based framework enabling structured and fine-grained controllability by allowing users or large language models (LLMs) to specify local musical descriptions aligned to song segments. These segment prompts are temporally broadcast to corresponding time windows, while global prompts ensure stylistic coherence. To support precise lyric-to-music alignment, we introduce an LLM-based duration predictor that autoregressively generates sentence-level timestamps in LyRiCs format. We further construct a large-scale data pipeline for high-quality song collection with aligned lyrics and prompts, and propose new metrics to evaluate segment alignment and vocal consistency. Experiments demonstrate that SegTune outperforms existing baselines in both musicality and controllability. Visit our project page (https://github.com/KlingAIResearch/SegTune) for codes and more generated songs.",
+          "authors": [
+            "Yuejiao Wang",
+            "Zihao Ji",
+            "Pengfei Cai",
+            "Xu Li",
+            "Haorui Zheng",
+            "Zewen Song",
+            "Zhongliang Liu",
+            "Chen Zhang",
+            "Pengfei Wan"
+          ],
+          "primary_category": "cs.SD",
+          "categories": [
+            "cs.SD",
+            "cs.AI",
+            "eess.AS"
+          ],
+          "published": "2026-05-31T06:01:15+00:00",
+          "link": "https://arxiv.org/pdf/2606.02638v1",
+          "tags": [
+            "keyword:symbolic-reg"
+          ],
+          "llm_score": 8.0,
+          "llm_evidence_en": "diffusion transformer for song generation with autoregressive duration predictor",
+          "llm_evidence_cn": "扩散Transformer用于歌曲生成，含自回归时长预测器",
+          "llm_evidence": "扩散Transformer用于歌曲生成，含自回归时长预测器",
+          "canonical_evidence": "扩散Transformer用于歌曲生成，含自回归时长预测器",
+          "llm_tldr_en": "Proposes SegTune, a Diffusion Transformer with segment-level local prompts and LLM-based autoregressive duration predictor for fine-grained song control.",
+          "llm_tldr_cn": "该论文针对歌曲生成中缺乏细粒度时序控制的问题，提出了SegTune框架，基于扩散Transformer，允许用户或LLM为不同乐段指定局部描述，并通过LLM-based自回归时长预测器实现歌词与音乐的精确对齐。实验证明了其在结构化控制和高保真生成方面的优势。为生成式音乐AI提供了新的可控方法。",
+          "llm_tldr": "该论文针对歌曲生成中缺乏细粒度时序控制的问题，提出了SegTune框架，基于扩散Transformer，允许用户或LLM为不同乐段指定局部描述，并通过LLM-based自回归时长预测器实现歌词与音乐的精确对齐。实验证明了其在结构化控制和高保真生成方面的优势。为生成式音乐AI提供了新的可控方法。",
+          "llm_tags": [
+            "query:symbolic-reg"
+          ],
+          "matched_query_tag": "query:symbolic-reg",
+          "matched_query_text": "diffusion probabilistic models for generative tasks",
+          "matched_requirement_id": "req-4",
+          "selection_source": "carryover_cache",
+          "paper_id": "2606.02638v1",
+          "carry_days": 1
+        },
+        {
+          "id": "2606.01220v1",
+          "source": "arxiv",
+          "title": "Fine-Tuning Diffusion Models for Molecular Generation via Reinforcement Learning and Fast Sampling",
+          "abstract": "Generating molecules that simultaneously satisfy drug-like properties and conform to the 3D structure of a target protein is a core challenge in structure-based drug design (SBDD). Existing generative approaches, however, often rely on costly post-hoc processing during Sampling or require carefully curated datasets during training, yet still achieve modest gains. These limitations are especially pronounced in multi-objective settings, where balancing conflicting criteria remains a core challenge. To address these challenges, We propose FTDiff, a reinforcement learning fine-tuning framework tailored for diffusion-based molecular generation under structural constraints. To ensure stable and sample-efficient optimization, FTDiff adopts a group relative policy optimization (GRPO) style strategy. Furthermore, FTDiff builds upon a time-free pretrained diffusion model and incorporates a fast sampling mechanism that reduces the number of denoising steps, significantly accelerating both training and inference while maintaining generation quality. By optimizing a fixed threshold-aware reward, FTDiff effectively guides the model to produce valid, diverse, and high- quality molecules that balance multiple drug design objectives. Extensive experiments on benchmark datasets demonstrate that FTDiff consistently outperforms prior methods, without requiring expensive post-hoc optimization or intricate data engineering.",
+          "authors": [
+            "Guang Lin",
+            "Shikui Tu",
+            "Lei Xu"
+          ],
+          "primary_category": "cs.LG",
+          "categories": [
+            "cs.LG",
+            "cs.AI"
+          ],
+          "published": "2026-05-31T13:11:48+00:00",
+          "link": "https://arxiv.org/pdf/2606.01220v1",
+          "tags": [
+            "keyword:symbolic-reg"
+          ],
+          "llm_score": 8.0,
+          "llm_evidence_en": "fine-tuning diffusion models via reinforcement learning for molecular generation",
+          "llm_evidence_cn": "利用强化学习微调扩散模型进行分子生成",
+          "llm_evidence": "利用强化学习微调扩散模型进行分子生成",
+          "canonical_evidence": "利用强化学习微调扩散模型进行分子生成",
+          "llm_tldr_en": "FTDiff uses RL to fine-tune diffusion models for structure-based drug design, improving multi-objective molecular generation with fast sampling.",
+          "llm_tldr_cn": "该论文针对现有扩散模型在结构药物设计中多目标优化困难问题，提出FTDiff框架，通过强化学习微调扩散模型。结合快速采样技术，在保持分子性质的同时满足蛋白质3D结构约束。实验表明FTDiff在平衡多个药物特性上显著优于现有方法，为扩散模型在药物设计中的应用提供了高效优化途径。",
+          "llm_tldr": "该论文针对现有扩散模型在结构药物设计中多目标优化困难问题，提出FTDiff框架，通过强化学习微调扩散模型。结合快速采样技术，在保持分子性质的同时满足蛋白质3D结构约束。实验表明FTDiff在平衡多个药物特性上显著优于现有方法，为扩散模型在药物设计中的应用提供了高效优化途径。",
+          "llm_tags": [
+            "query:symbolic-reg"
+          ],
+          "matched_query_tag": "query:symbolic-reg",
+          "matched_query_text": "diffusion probabilistic models for generative tasks",
+          "matched_requirement_id": "req-4",
+          "selection_source": "carryover_cache",
+          "paper_id": "2606.01220v1",
+          "carry_days": 1
+        },
+        {
+          "id": "2606.01380v1",
+          "source": "arxiv",
+          "title": "Training-free image inversion for one-step diffusion models",
+          "abstract": "In this work, we introduce a novel training-free inversion (TFinv) framework for one-step diffusion models,addressing key challenges in real image inversion and editing. We first identify two critical factors hamperingreal-image inversion and editing: (1) Initial Latent Editability, which is related to the distance between theinitial noise and the ideal Gaussian distribution, and (2) Caption Gap, which means the alignment betweentext captions and image representations. Both factors influence inversion efficiency and the editability ofone-step diffusion models. Then, we propose two novel techniques: iterative noise alignment (iterNA), whichminimizes the distribution gap to align with the normal Gaussian distribution, and suffix learning (suffL),which enhances text-to-image caption alignment by introducing learned suffix prompt tokens. These techniquesenable precise inversion of input images into their initial noise representations and facilitate image editing.Furthermore, we propose a mask-based editing technique for localized edits while preserving backgroundintegrity. Comprehensive experiments on the PIE-Bench dataset validate that our method TFinv not onlyachieves state-of-the-art performance in one-step diffusion editing, but also significantly outperforms existingmultistep approaches in efficiency. The code is available at https://github.com/tttao-uwu/TFinv.git.",
+          "authors": [
+            "Tao Wu",
+            "Senmao Li",
+            "Yaxing Wang",
+            "Shiqi Yang",
+            "Kai Wang",
+            "Joost van de Weijer"
+          ],
+          "primary_category": "cs.CV",
+          "categories": [
+            "cs.CV"
+          ],
+          "published": "2026-05-31T18:10:23+00:00",
+          "link": "https://arxiv.org/pdf/2606.01380v1",
+          "tags": [
+            "keyword:symbolic-reg",
+            "query:symbolic-reg"
+          ],
+          "llm_score": 8.0,
+          "llm_evidence_en": "training-free inversion for one-step diffusion models, addressing image editing",
+          "llm_evidence_cn": "一步扩散模型的无训练图像反转，应用于图像编辑",
+          "llm_evidence": "一步扩散模型的无训练图像反转，应用于图像编辑",
+          "canonical_evidence": "一步扩散模型的无训练图像反转，应用于图像编辑",
+          "llm_tldr_en": "Proposes a training-free inversion framework for one-step diffusion models, using iterative noise alignment and suffix learning to improve real image editing.",
+          "llm_tldr_cn": "该论文针对一步扩散模型在真实图像反转和编辑中的挑战，提出无训练反转框架TFinv。通过迭代噪声对齐（iterNA）缩小初始潜在分布与高斯分布的差距，以及后缀学习（suffL）增强文本-图像对齐。在不需额外训练的情况下，实现了高质量图像编辑，扩展了扩散模型在图像处理中的实用性。",
+          "llm_tldr": "该论文针对一步扩散模型在真实图像反转和编辑中的挑战，提出无训练反转框架TFinv。通过迭代噪声对齐（iterNA）缩小初始潜在分布与高斯分布的差距，以及后缀学习（suffL）增强文本-图像对齐。在不需额外训练的情况下，实现了高质量图像编辑，扩展了扩散模型在图像处理中的实用性。",
+          "llm_tags": [
+            "query:symbolic-reg"
+          ],
+          "matched_query_tag": "query:symbolic-reg",
+          "matched_query_text": "diffusion probabilistic models for generative tasks",
+          "matched_requirement_id": "req-4",
+          "selection_source": "carryover_cache",
+          "paper_id": "2606.01380v1",
+          "carry_days": 1
+        },
+        {
+          "id": "2606.05555v1",
+          "source": "arxiv",
+          "title": "Representation Learning Enables Scalable Multitask Deep Reinforcement Learning",
+          "abstract": "Scaling reinforcement learning (RL) to diverse multitask settings remains a central challenge. While recent advances in model-based RL achieve strong performance, they rely on planning and complex training pipelines, making it unclear which components are essential for scalability. We revisit this question and argue that the primary driver of scalable multitask RL is not model-based control, but \\emph{representation learning}. In particular, we show that combining predictive, model-based representations with high-capacity value function approximation is sufficient to achieve strong performance, even without planning. We evaluate a simple model-free algorithm, MR.Q, coupled with auxiliary predictive objectives into a scalable actor-critic architecture. This approach outperforms a recent world-model-based method and a range of deep RL baselines across a diverse suite of multitask continuous control tasks, while significantly reducing computational overhead and improving wall-clock efficiency. We observe consistent improvements with increased model capacity and show through ablations that predictive representation learning is critical for performance.",
+          "authors": [
+            "Johan Obando-Ceron",
+            "Lu Li",
+            "Scott Fujimoto",
+            "Pierre-Luc Bacon",
+            "Aaron Courville",
+            "Pablo Samuel Castro"
+          ],
+          "primary_category": "cs.LG",
+          "categories": [
+            "cs.LG",
+            "cs.AI"
+          ],
+          "published": "2026-06-04T01:09:20+00:00",
+          "link": "https://arxiv.org/pdf/2606.05555v1",
+          "tags": [
+            "keyword:symbolic-reg",
+            "query:symbolic-reg"
+          ],
+          "llm_score": 8.0,
+          "llm_evidence_en": "multitask deep reinforcement learning",
+          "llm_evidence_cn": "多任务深度强化学习",
+          "llm_evidence": "多任务深度强化学习",
+          "canonical_evidence": "多任务深度强化学习",
+          "llm_tldr_en": "Shows that representation learning, not planning, drives scalable multitask RL, and proposes MR.Q with predictive objectives for strong performance.",
+          "llm_tldr_cn": "多任务强化学习可扩展性的关键因素尚不明确。本文通过实验论证，表示学习而非基于模型的规划是实现可扩展多任务RL的主要驱动力，并提出结合预测目标的简单模型无关算法MR.Q，在多个基准上达到或超越复杂基于模型方法的性能，为多任务RL设计提供了简洁高效的新思路。",
+          "llm_tldr": "多任务强化学习可扩展性的关键因素尚不明确。本文通过实验论证，表示学习而非基于模型的规划是实现可扩展多任务RL的主要驱动力，并提出结合预测目标的简单模型无关算法MR.Q，在多个基准上达到或超越复杂基于模型方法的性能，为多任务RL设计提供了简洁高效的新思路。",
+          "llm_tags": [
+            "query:symbolic-reg"
+          ],
+          "matched_query_tag": "query:symbolic-reg",
+          "matched_query_text": "reinforcement learning algorithms and applications",
+          "matched_requirement_id": "req-3",
+          "selection_source": "carryover_cache",
+          "paper_id": "2606.05555v1",
           "carry_days": 1
         }
       ]

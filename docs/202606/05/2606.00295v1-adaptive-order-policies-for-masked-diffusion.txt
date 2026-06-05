@@ -1,0 +1,736 @@
+Title: Adaptive Order Policies for Masked Diffusion
+
+URL Source: https://arxiv.org/pdf/2606.00295v1
+
+Published Time: Tue, 02 Jun 2026 00:15:28 GMT
+
+Number of Pages: 14
+
+Markdown Content:
+# Adaptive Order Policies for Masked Diffusion 
+
+Jama Hussein Mohamud 1,2∗
+
+, Mohsin Hasan 1,2∗
+
+, Mirco Ravanelli 2,3, Yoshua Bengio 1,2,41Université de Montréal, 2Mila, 3Concordia University, 4LawZero 
+
+## Abstract 
+
+Masked diffusion models have seen great success in capturing data distributions over discrete sequences in domains such as text and proteins. These models gener-ate data by iteratively unmasking tokens starting from a fully masked sequence, with the unmasking order typically chosen at random or using a heuristic based on denoiser probabilities. In this work, we propose a scheme for learning the un-masking order using an additional lightweight policy network on top of a diffusion model. Our proposed loss reweights terms in the masked diffusion loss according to policy probabilities, and results in a policy that prefers positions where the denoiser is more likely to be correct. We study this loss in two settings: (i) training solely the policy while using a frozen pre-trained denoiser, and (ii) training the policy and denoiser jointly with the weighted loss to allow for mutual adaptation. We demonstrate that our approach outperforms common heuristics on problems that are sensitive to token ordering, such as combinatorial tasks and proteins. 
+
+## 1 Introduction 
+
+Diffusion models have established themselves as a powerful paradigm for generative modeling, achieving remarkable success in continuous domains such as images (Ho et al., 2020; Saharia et al., 2022; Rombach et al., 2022) and molecular structures (Watson et al., 2023; Abramson et al., 2024). More recently, discrete diffusion models – which operate directly on token sequences by iteratively masking and unmasking – have shown strong results in language modeling (Sahoo et al., 2024; Nie et al., 2025; Shi et al., 2024), protein design (Alamdari et al., 2023; Wang et al., 2024), and drug discovery (Lee et al., 2025). (Huang et al., 2022)(Chen & Lipman, 2024)(Austin et al., 2021) (Gat et al., 2024) A key design choice in masked diffusion models (MDM) is the order in which tokens are unmasked during generation. The standard approach selects positions uniformly at random. However, practi-tioners have found that heuristic ordering strategies – such as unmasking the most confident position first (Nie et al., 2025) or the position with the largest probability margin (Kim et al., 2025) – can dramatically improve sample quality on downstream tasks. This effect is particularly pronounced on constraint satisfaction problems such as Sudoku and Boolean satisfiability (3-SAT), where the unmasking order directly impacts whether the model can propagate constraints correctly. Despite the empirical success of heuristic orderings, these remain hand-designed and may be subopti-mal for a given model and dataset. A natural question arises: can we learn the unmasking order? 
+
+That is, rather than relying on fixed heuristics, can we train a lightweight auxiliary network to predict which positions to unmask, conditioned on the current partially masked sequence? In this work, we propose a simple approach for learning adaptive unmasking orderings in MDMs. Our approach introduces a policy network qϕ(i | xt) and a modified cross-entropy objective that can be used either to train a lightweight policy layer on top of a pretrained masked diffusion model  
+
+> ∗Equal contribution. Correspondence to {hussein-mohamu.jama, mohsin.hasan}@mila.quebec
+> Preprint.
+> arXiv:2606.00295v1 [cs.LG] 29 May 2026
+
+or to jointly train the policy and denoiser. The objective weights policy probabilities by the cross entropy of the denoiser at each token position, encouraging the policy to select positions that are most informative for generation. Across both the policy-only and joint training settings, we show improvements over existing heuristic orderings on Sudoku, 3-SAT, and protein generation with DPLM. In the policy-only setting, these gains come with very few additional parameters ( < 1% of the MDM’s total parameters) and require only a few hundred training iterations, compared to the hundreds of thousands typically required for MDM training. In the joint training setting, we additionally introduce a policy-aware denoising objective, and show that it further improves performance on combinatorial tasks while also improving predicted foldability in protein generation and maintaining diversity close to heuristic orderings. 
+
+## 2 Method 
+
+2.1 Masked Diffusion Models 
+
+Throughout this work, we denote a sequence of length L as x = ( x1, . . . , x L) ∈ V L, with tokens taking values in some vocabulary set xi ∈ V . We consider the case of masked diffusion, where a special masking token m is included in the vocabulary set. Other notation includes: the Kronecker symbol δ(i, j ) (equal to 1 for i = j and 0 otherwise), Cat( x; p) to denote the categorical distribution with probabilities p, and ∆k to denote the probability simplex over k dimensions. Masked diffusion models (MDMs) use a noising process to map the data distribution pdata (x) at time 0 to the delta distribution at the fully masked state M = ( m, . . . , m ), p1(x) = δ(x, M ) at time 1. A typical noising process consists of converting a data token xi 
+
+> 0
+
+into the masked token with some probability 1 − αt, independently over dimensions (Sahoo et al., 2024): p(xt | x0) = 
+
+QLi=1 αtδ(xit, x i
+
+> 0
+
+) + (1 − αt)δ(xit, m ). The parameter αt denotes a decreasing noise schedule, with 
+
+α0 = 1 and α1 = 0 . A typical choice is the linear schedule αt = 1 − t.For reversing this process, a neural network parameterizes a distribution over clean data x0 con-ditioned on the partially masked sequence xt. In particular, the network outputs an independent distribution over each token position i, as μθ (xt)[ i, ·] ∈ ∆|V| , which satisfies μθ (xt)[ i, m ] = 0 (the clean data cannot contain masks) and μθ (xt)[ i, x it] = 1 if xit̸ = m (the clean data approximation retains unmasked positions in xt). The function μθ is referred to as the denoiser. Given a denoiser, the reverse transition over two nearby time-steps s < t is (Sahoo et al., 2024): 
+
+pθ (xis | xt) = 
+
+(
+
+Cat 
+
+
+
+xis; 1−αs 
+
+> 1−αt
+
+δ(·, m ) + αs−αt 
+
+> 1−αt
+
+μθ (xt)[ i, ·]
+
+
+
+if xit = m
+
+Cat( xis; δ(·, x it)) if xit̸ = m (1) Let CE( i, p ) denote the cross entropy loss with sample i and probability p: CE( i, p ) = − log p[i].The goal is to train μθ (xt) to match the factored posterior QLi=1 p(xi 
+
+> 0
+
+| xt). For such a denoiser, the transitions in Equation (1) correctly reverse the noising process and recover the data distribution at time 0 (Sahoo et al., 2024; Shi et al., 2024). The training objective for μθ is the weighted cross entropy loss: 
+
+LMDM (θ) = Et∼U [0 ,1] ,x t∼p(xt|x0),x 0∼pdata 
+
+"
+
+−α′
+
+> t
+
+1 − αtLX
+
+> i=1
+
+δ(xit, m )CE( xi
+
+> 0
+
+, μ θ (xt)[ i, ·]) 
+
+#
+
+(2) With a trained denoiser, the generation process consists of starting with a completely masked sequence 
+
+x1 = M and iteratively unmasking tokens in the sequence over T steps to obtain a final sample x0.One step of this sampling procedure is done by simulating Equation (1), which involves: (i) Sampling an approximation of clean data from the denoiser ˆx0 ∼ μθ (xt)
+
+(ii) Randomly choosing which (currently masked) positions I in xt to unmask (by replacing 
+
+xit = m with ˆxi 
+
+> 0
+
+for all i ∈ I). Properly simulating Equation (1) requires random selection of the set of unmasking positions I
+
+(Sahoo et al., 2024). However, a number of works have found success in selecting I through some heuristic informed by the denoiser logits μθ (xt) (Nie et al., 2025; Kim et al., 2025; Ben-Hamu et al., 22025). These involve calculating a score si and then prioritizing unmasking positions i with higher score (possibly with added noise). Some options for the score calculation which have been investigated in previous work include choices such as (i) Top probability : The probability of the sampled clean tokens si = μθ (xt)[ i, ˆxi
+
+> 0
+
+]
+
+(Nie et al., 2025), (ii) Top probability margin : The probability margin, i.e. the gap between the highest probability and the second highest probability si = μθ (xt)[ i, j 1] − μθ (xt)[ i, j 2] where 
+
+j1 = arg max j μθ (xt)[ i, j ] and j2 = arg max j̸ =j1 μθ (xt)[ i, j ] (Kim et al., 2025), and (iii) Entropy :The negative entropy of the position si = −H(μθ (xt)[ i, ·]) (Ben-Hamu et al., 2025). These heuristics have been shown to yield better performance on a number of downstream tasks (such as coding and math), or on tasks such as Sudoku, where generating a valid solution is highly dependent on the order of unmasking (Nie et al., 2025; Kim et al., 2025). The problem of selecting the unmasking ordering also informs the efficiency of performing inference, since being able to unmask multiple tokens leads to fewer calls to the denoising model to generate a complete sequence. Intuitively, we expect certain token positions to be independent of others, and we would expect unmasking them in parallel to retain the same performance as unmasking one at a time. 
+
+2.2 Learnable Adaptive Order Policies 
+
+Given the importance of the unmasking ordering, we ask the following question: armed with a dataset, and a pre-trained denoiser μθ , can we train a lightweight policy network qϕ(i | xt) which outputs a distribution over the next token position i to unmask for xt? The hope is to add a small number of additional trainable parameters, and spend some additional training iterations to obtain better performance on challenging tasks. We can note that MDMs are sensitive to the token ordering precisely due to imperfections in the denoiser model. As argued by Ben-Hamu et al. (2025) a perfect denoiser is able to sample from the target regardless of the unmasking order (since it corresponds to different factorizations of the joint distribution, according to the chain rule of probability). Therefore, a reasonable objective for the policy is one that accounts for the loss of the denoiser model. Based on this, we propose to train the policy to place higher probability on positions which obtain a smaller loss, as measured by the cross entropy. This is captured in the objective: 
+
+LORDER (ϕ) = Et∼U [0 ,1] ,x t∼p(xt|x0),x 0∼pdata 
+
+"
+
+−α′
+
+> t
+
+1 − αtLX
+
+> i=1
+
+qϕ(i | xt)CE( xi
+
+> 0
+
+, μ θ (xt)[ i, ·]) 
+
+#
+
+(3) Note that we assume q(i | xt) = 0 for unmasked positions xit̸ = m. This is identical to the MDM objective Equation (2) except for the fact that the sum over masked positions is weighted by the policy qϕ. In particular, for a uniform policy over masked tokens, we recover, up to multiplication, the vanilla MDM loss. We can further justify this choice of objective by relating it to an ELBO bound for the policy-guided unmasking process. Using an ELBO decomposition for such a process, derived by Peng et al. (2025), we can show that our loss in Equation (3) results from making approximations to avoid computing intractable terms. We present the details of this derivation in Appendix C. For a frozen denoiser network θ, the policy network qϕ is trained to predict where the current denoiser is most likely correct. The optimal policy places all probability on the position with smallest cross entropy loss. We will refer to this theoretically optimal policy as the oracle : qoracle (i |
+
+xt) = δ(i, arg min j,x jt =m CE( xj
+
+> 0
+
+, μ θ (xt)[ j, ·])) . We empirically validate the choice of this loss by evaluating the oracle policy (with access to ground truth data x0), and confirming that it improves metrics relative to other heuristic samplers in Section 3. Other approaches for training unmasking policies typically rely on more expensive gradient estimation, or RL procedures for tasks involving a reward. These are discussed in Section 4. Finally we note that for sampling multiple positions, we can use the policy probabilities as score values si = qϕ(i | xt) and use them in a similar way to other heuristics (for instance, unmasking the 
+
+k positions with the largest policy probabilities). 32.3 Policy-Aware Denoiser Training 
+
+The policy objective in Equation (3) answers where the model should unmask next, but it also raises two related questions: can the policy improve the denoiser itself, and can the denoiser be trained while explicitly knowing that a policy will be used at sampling time? We note that the objective Equation (3) already allows for gradients with respect to the denoiser parameters θ, and admits a sensible interpretation. Namely, viewed from the perspective of training the denoiser, the objective upweights the loss at positions proportional to the probability the policy will select them for unmasking. A slight issue may occur with directly using Equation (3) for training the denoiser, since the policy may quickly collapse to a handful of positions and prevent denoiser training on most masked tokens. We alleviate this with a simple modification: we add the original MDM loss to the policy-weighted objective to ensure better training signal. This is a stability trick used in other works (Peng et al., 2025). Putting together these observations, we propose the following denoiser loss as a substitute to the vanilla MDM objective: 
+
+LPA -MDM (θ) = E
+
+"
+
+−α′
+
+> t
+
+1 − αtLX
+
+> i=1
+
+δ(xit, m )  1 + qϕ(i | xt) CE( xi
+
+> 0
+
+, μ θ (xt)[ i, ·]) 
+
+#
+
+. (4) In implementation, the policy probabilities are detached inside the denoiser loss, so gradients with respect to θ do not backpropagate through qϕ.The policy itself is still trained with Equation (3), with the denoiser losses detached when optimizing 
+
+ϕ. Joint training therefore lets the policy identify consequential positions, while simultaneously teaching the denoiser to allocate more capacity to them. The algorithm for either policy-only training or joint training is summarized in Alg. 1. To separate the effect of learned policy guidance from the effect of simply reweighting the denoiser loss, we can also compare against heuristic-aware denoiser objectives, similar to those in (Peng et al., 2025). Concretely, we can replace qϕ(i | xt) in Equation (4) by normalized weights derived from standard confidence scores computed from the denoiser logits, such as the top log-probability or the top-two margin. This yields a matched control where the denoiser is still trained with emphasis on selected positions, but the emphasis is determined by a fixed heuristic rather than a learned policy. Such a comparison isolates the main question of interest: whether informing the denoiser about the existence of a learned unmasking policy during training provides benefits beyond the gains obtainable from generic confidence-based reweighting alone. 
+
+## 3 Experiments 
+
+We evaluate our adaptive ordering approach on two constraint satisfaction tasks known to be sensitive to token ordering, Sudoku puzzle solving and 3-SAT (Boolean satisfiability with 3 literals per clause) (Kim et al., 2025; Ye et al., 2024), and on protein sequence generation with DPLM (Wang et al., 2024). For Sudoku and 3-SAT we use a 6M-parameter GPT-2 denoiser trained as an MDM with 
+
+T =20 steps; full dataset descriptions and training details, including the DPLM setup, are provided in Appendix A. 
+
+Policy architecture. We parameterize qϕ as a lightweight per-token MLP that conditions on both the denoiser’s confidence scores (max log-probability) and the hidden states from the last layer of the base model. Specifically, each scalar confidence score is projected to the hidden dimension ( d=384 )via a linear layer, summed with the corresponding hidden-state vector, and passed through a two-layer MLP (hidden dimension 128, ReLU activation) that outputs a per-position routing logit. The policy adds ∼50K parameters ( <1% of the base model). In the policy-only setting, it is trained on top of a frozen denoiser using Equation (3), while in the joint-training setting it is optimized together with the denoiser under the objectives described in Section 2. We also experimented with a transformer-based policy variant (Jazbec et al., 2025), which did not yield further improvement (see Appendix B). 
+
+Combinatorial baselines and decoding. At inference, we compare against the High conf. , Margin ,and Oracle ordering strategies described in Section 2. Unless otherwise noted, all methods use 4Algorithm 1: Training with Policy-Only or Joint Updates 
+
+Input: dataset D, denoiser μθ , policy qϕ, noise schedule αt 
+
+> 1
+
+while not converged do  
+
+> 2
+
+Sample x0 ∼ D , t ∼ U [0 , 1] , and xt ∼ p(xt | x0) 
+
+> 3
+
+Compute denoiser logits μθ (xt) and policy probabilities qϕ(i | xt) over masked positions  
+
+> 4
+
+Compute token losses ℓi ← δ(xit, m ) CE( xi
+
+> 0
+
+, μ θ (xt)[ i, ·]) for i = 1 , . . . , L  
+
+> 5
+
+Define 
+
+LORDER (ϕ) = −α′
+
+> t
+
+1 − αtLX
+
+> i=1
+
+qϕ(i | xt) stopgrad( ℓi)
+
+if joint training is enabled then  
+
+> 6
+
+Define 
+
+LPA -MDM (θ) = −α′
+
+> t
+
+1 − αtLX
+
+> i=1
+
+
+
+1 + stopgrad( qϕ(i | xt)) 
+
+
+
+ℓi
+
+Define Ltotal = LORDER (ϕ) + LPA -MDM (θ) // joint training  
+
+> 7
+
+else  
+
+> 8
+
+Define Ltotal = LORDER (ϕ) // policy-only training  
+
+> 9
+
+Update trainable parameters using Ltotal 
+
+Table 1: Results across policy-only training and joint policy-denoiser training. For Sudoku and 3-SAT, we report deterministic decoding accuracy. For DPLM-150M (Wang et al., 2024), we report mean pLDDT (and standard deviation) across 3 random seeds after averaging over sequence lengths {100 , 200 , 300 , 400 , 500 }. Higher is better; best result within each block and column is shown in bold .
+
+Sudoku 3-SAT DPLM-150M Policy-only training 
+
+High conf. 89.84% 75.9% 82.20 ± 0.76 Margin 88.67% 76.0% 82.02 ± 0.31 Policy 90.82% 76.1% 83.85 ± 0.80 
+
+Oracle policy 100.0% 82.3% N/A 
+
+Joint training 
+
+Baseline 92.72 88.8 82.20 ± 0.76 High conf. 92.68 89.8 82.85 ± 0.85 Margin 91.00 85.2 82.28 ± 0.53 Policy 92.87 90.9 84.94 ± 1.00  
+
+> ∗Policy adds <50K params ( <1% of the base model).
+
+deterministic top-k decoding with a linear schedule over T =20 reverse steps. For our joint training experiments, the heuristic and policy variants use the modified denoiser objective from Equation (4). 
+
+Protein generation with DPLM. To test whether the same ideas transfer beyond combinatorial reasoning, we also evaluate adaptive ordering on DPLM-150M (Wang et al., 2024), a masked diffusion model for protein sequence generation. We consider both policy-only adaptation and joint policy-denoiser training, and evaluate structure quality, foldability, and diversity using metrics including pLDDT, pTM, pAE, foldability rate, token entropy, and inner-TM; metric definitions are given in Appendix A.2.2. 
+
+3.1 Main results Policy-only training. The upper block of Table 1 summarizes policy-only adaptation with a frozen denoiser using Equation (3). Across Sudoku, 3-SAT, and protein generation with DPLM, the learned policy outperforms the heuristic baselines. On the combinatorial tasks, it achieves the best non-oracle performance while still leaving a visible gap to the oracle. On DPLM-150M, it substantially improves predicted foldability relative to both heuristic baselines while maintaining diversity close to the 5Figure 1: Adaptive ordering on DPLM-150M. Top: policy-only adaptation. Bottom: joint training. Left: mean pLDDT by target sequence length. Right: inner-TM diversity, where lower is better. Representative predicted 3D folds illustrate jointly trained samples across different sequence lengths. The learned policy improves foldability while maintaining diversity close to the heuristic baselines. 
+
+heuristic orderings, as also shown in the top row of Figure 1. This establishes that even without modifying the base denoiser, learning the unmasking order alone yields consistent gains across domains. 
+
+Joint training. The lower block of Table 1 evaluates the policy-aware denoiser objective from Equation (4). Here, High conf. and Margin replace the learned policy weights with normalized heuristic weights derived from max log-probability and top-two margin, respectively. The main pattern is that learned policy reweighting improves the denoiser more reliably than matched heuristic reweighting. On Sudoku and 3-SAT, policy-aware scaling gives the strongest deterministic results among the compared training objectives. The same comparison also extends to DPLM, where the learned policy-weighted objective improves protein generation relative to the heuristic-weighted controls, as also illustrated in the bottom row of Figure 1. Taken together, these results show that the policy is useful not only as an inference-time ordering policy but also as a training signal for the denoiser. 
+
+Protein sequence generation. We evaluate our joint policy-denoiser model by generating 100 sequences at lengths 200, 300, . . . , 800, which are then folded into 3D structures using ESMFold (Lin et al., 2022). Results are shown in Table 2, which reports structure quality, foldability, and diversity metrics; the precise metric definitions are collected in Appendix A.2.2. We note that both our results and those of Peng et al. (2025) reported in the table use the same number of parameters (150M). An important property of policy-aware training is that its benefits are not limited to decoding with the learned policy itself. As shown in Figure 2, the denoiser trained with policy-aware scaling also improves heuristic decoding, most clearly on 3-SAT and in the stochastic Sudoku setting, while remaining competitive in the deterministic Sudoku setting. This suggests that the policy-weighted objective does not merely tailor the denoiser to one decoding rule, but improves the underlying denoiser in a way that transfers across different unmasking heuristics. 6Table 2: Protein sequence generation results including our joint-policy, with baselines results taken from Peng et al. (2025). Each model generates 100 sequences at lengths 200, 300, . . . , 800, which are folded into 3D structures using ESMFold. Structure quality is measured by pLDDT, pTM, and pAE, while diversity is measured by token entropy and sequence uniqueness. Foldability is the percent of sequences with pLDDT > 80 , pTM 
+
+> 0.7, and pAE < 10 . Best values in each column are shown in bold .                                                                        
+
+> Model pLDDT ↑pTM ↑pAE ↓Foldability (%) ↑Entropy ↑Diversity (%) ↑
+> Large
+> ESM3 34.13 0.23 24.65 1.50 3.99 93.44
+> ProGen2-medium 57.94 0.38 20.81 12.75 2.91 91.45 ProGen2-large 55.07 0.35 22.00 11.87 2.73 91.48 DPLM-650M 79.53 0.66 11.85 49.14 3.18 92.22
+> 150M-scale
+> EvoDiff 31.84 0.21 24.76 0.43 4.05 93.19 ProGen2-small 49.38 0.28 23.38 4.48 2.55 89.31 DPLM-150M 80.23 0.65 12.07 48.14 3.14 92.80 DLM-150M 81.32 0.65 12.00 42.43 3.21 92.45 DLM-150M + PAPL 81.48 0.72 8.97 59.40 3.12 91.73 Joint policy (ours) 86.43 0.76 9.68 54.14 4.12 93.06
+
+3.2 Ablations 0            
+
+> 20
+> 40
+> 60
+> 80
+> 100
+> Accuracy (%)
+> 92.7
+> 19.7
+> 92.5
+> 20.7
+> 91.0 90.4 90.5 91.3
+> High-conf Margin High-conf Margin
+> Deterministic Stochastic
+> 84
+> 85
+> 86
+> 87
+> 88
+> 89
+> 90
+> 91
+> 92
+> Accuracy (%)  89.8
+> 88.5
+> 90.8
+> 90.1
+> 85.2
+> 84.7
+> 90.8 91.0
+> High-conf Margin High-conf Margin
+> Deterministic Stochastic
+> Heuristic-weighted objective Policy-weighted objective
+
+Figure 2: Heuristic transfer under policy-aware training. We compare heuristic-specific training objectives against our policy-weighted objective when decoding with the same heuristic. Policy-aware training improves both high-confidence and margin decoding across tasks, especially in stochastic decoding regimes. 
+
+Deterministic versus stochastic decoding. We study the effect of decoding noise in Table 3. One notable observation is the discrepancy between our top-probability result on Sudoku under deterministic decoding (89.84%) and the 18.51% reported by Kim et al. (2025). We find that this gap is primarily an artifact of the decoding strategy , not an inherent limitation of the heuristic. As shown in Table 3, when we switch from deterministic to stochastic decoding (adding Gumbel noise with scale 0.5), the top-probability heuristic on Sudoku drops to 18.26%, closely matching the 18.51% of Kim et al. (2025). The margin heuristic, by contrast, remains stable under stochastic decoding. This reveals that the reported large advantage of the margin heuristic over top-probability is largely attributable to the latter’s sensitivity to stochastic perturbations in decoding, rather than a fundamentally superior ordering strategy. Under deterministic decoding, both heuristics perform comparably, with top-probability slightly ahead. This pattern is less extreme on 3-SAT, where top-probability degrades modestly under stochastic decoding, while the margin heuristic remains stable. Notably, our learned policy is robust across both decoding regimes and consistently outperforms both heuristics. The lower block of Table 3, together with Figure 2, shows that the same robustness pattern also appears in the joint-training setting: policy-aware scaling avoids the sharp stochastic drop seen for the baseline and high-confidence variants, while remaining robust under stochastic decoding and outperforming all alternative training objectives in both decoding regimes. 7Table 3: Deterministic versus stochastic decoding ablation on combinatorial tasks. Stochastic decoding adds Gumbel noise with scale 0.5. Higher is better. Best result per column within each section is shown in bold . The plot on the right visualizes the gap between deterministic and stochastic decoding. 
+
+Sudoku 3-SAT Policy-only ordering Det. Stoch. Det. Stoch. 
+
+High conf. 89.84% 18.26% 75.9% 72.8% Margin 88.67% 88.38% 76.0% 75.6% Policy 90.82% 90.53% 76.1% 75.9% Joint-training objective Det. Stoch. Det. Stoch. 
+
+Baseline 92.72 18.35 88.8 87.8 High conf. 92.68 19.67 89.8 88.5 Margin 91.00 90.38 85.2 84.7 Policy 92.87 93.36 90.9 90.9 25 50 75 100        
+
+> Accuracy
+> High conf.
+> Margin
+> Policy
+> Sudoku
+> -71.6
+> -0.3
+> -0.3
+> Policy-only ordering
+> 70 80
+> Accuracy
+> High conf.
+> Margin
+> Policy
+> 3-SAT
+> -3.1
+> -0.4
+> -0.2
+> Policy-only ordering
+> 25 50 75 100
+> Accuracy
+> Baseline
+> High conf.
+> Margin
+> Policy
+> Sudoku
+> -74.4
+> -73.0
+> -0.6
+> +0.5
+> Joint-training objective
+> 80 90 100
+> Accuracy
+> Baseline
+> High conf.
+> Margin
+> Policy
+> 3-SAT
+> -1.0
+> -1.3
+> -0.5
+> +0.0
+> Joint-training objective
+> Deterministic Stochastic
+
+Efficiency as a function of diffusion steps. We also study how ordering quality interacts with the number of reverse steps T , which directly controls inference cost. As shown in Figure 3, learned ordering improves efficiency by achieving higher accuracy for the same step budget. On Sudoku, the learned policy substantially outperforms both heuristic baselines and nearly matches the oracle at 
+
+T =100 . On 3-SAT, the learned policy consistently improves over the high-confidence heuristic and is competitive with, or slightly better than, the margin heuristic across moderate and large step budgets. In both tasks, the oracle remains better than the learned policy, indicating that there is still substantial room to improve learned unmasking strategies. Overall, these results reinforce that ordering is not only an accuracy issue, but also an efficiency issue: stronger policies can achieve better performance with fewer denoising steps. 1 2 5 10 20 50 100 
+
+Diffusion Steps (T) 
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+1.0 
+
+> Accuracy
+
+1 2 5 10 20 50 100 
+
+Diffusion Steps (T) 
+
+0.65 
+
+0.70 
+
+0.75 
+
+0.80 
+
+0.85 
+
+0.90 
+
+0.95    
+
+> Accuracy
+> High conf. Margin Policy Optimal policy (oracle)
+
+Figure 3: Accuracy as a function of the number of reverse diffusion steps T on Sudoku (left) and 3-SAT (right). Better ordering is especially valuable at small step budgets, where improved unmasking policies can recover substantially more accuracy for the same inference cost. 
+
+3.3 Discussion 
+
+Several observations emerge from these results. First, the learned policy consistently improves over heuristic orderings on both constraint-satisfaction tasks, using a lightweight auxiliary network with less than 1% parameter overhead, demonstrating that the unmasking order can be improved by learning. Second, the remaining gap to the oracle suggests that significantly better policies are still achievable, motivating future work on more expressive policy architectures and training procedures. Third, our analysis on decoding strategies highlights the importance of carefully controlling for inference-time design choices when comparing ordering heuristics – a point that has been underap-preciated in prior work. Fourth, the policy-aware denoiser training ablation indicates that the policy 8is useful not only at inference time, but also as a training signal for the denoiser itself; the learned reweighting consistently outperforms matched heuristic-based controls. Finally, the DPLM results show that the same objective adaptation extends beyond logical reasoning tasks to protein generation in both the policy-only and joint-training settings. In all cases, the policy converged within a few hundred iterations, requiring only a small fraction compared to the base model’s training budget. 
+
+## 4 Related Works 
+
+Wang et al. (2025) also train a policy for the unmasking order, by treating the order as a latent variable 
+
+z. They propose a variational method for optimizing it, which requires parameterizing the posterior approximation qϕ(z | x), in addition to the trainable policy over orders pθ (z | x). The former is only used as part of the training objective for the latter, and not during inference. In addition, the optimization of the variational posterior requires gradient estimation techniques to reduce variance, and complicates the optimization loop. Our loss by contrast is much simpler. Another set of works assume access to verifiable reward functions rather than a dataset (Hong et al., 2025; Jazbec et al., 2025). These frame the generation process of a masked diffusion model as a Markov Decision Process, and optimize the unmasking policy using RL objectives. Our work focuses on the setting where data is available, since the aim is to expand to modalities where an explicit reward function is not as available, such as protein sequence generation. Peng et al. (2025) propose a modification of the MDM loss which accounts for using heuristics when determining the unmasking order (rather than random unmasking). The loss resembles our objective Equation (4), and we outline the connections between our objective and their ELBO bound in Appendix C. The main difference with our work is that our objective makes necessary simplifications to enable joint training of the denoiser and policy (as opposed to only training the denoiser, as done in their work). Recent works also learn auxiliary token-level scoring modules that can be used to remask tokens during inference, to improve generation quality. Huang et al. (2025) train a confidence head for self-reflective remasking in diffusion language models: for unmasked tokens in xt, the head predicts whether they are correct, while for masked positions it is supervised by the denoiser’s probability of recovering the ground-truth token. Meshchaninov et al. (2025) similarly fine-tune a lightweight error-prediction layer on top of a pretrained model, to predict whether tokens in a denoiser-produced 
+
+ˆx0 are incorrect. These works are related to our policy-only setting in that they train an additional scoring layer on top of a pretrained denoiser. However, while their framework is concerned with using scores to remask tokens, our method more directly aims to learn an unmasking order. Our work differs in the objective and training setup: we directly optimize a policy over unmasking decisions with a cross-entropy-based objective weighted by denoiser losses, rather than training an error classifier, and we additionally study a joint training objective that couples the policy and denoiser, which neither of these approaches explore. 
+
+## 5 Conclusion 
+
+This work studies a method for training a policy over token orderings for masked diffusion models, by learning to sample positions with lower cross-entropy loss. We demonstrate that our approach outperforms common heuristics on logical tasks that are sensitive to the unmasking ordering, and that the same adaptation also transfers to protein generation with DPLM. In the policy-only setting, these gains come at the cost of only a few training iterations for a lightweight auxiliary network, while joint training further improves performance through a policy-aware denoising objective. Our results suggest that the unmasking order in masked diffusion models should be treated as a learnable component rather than a fixed heuristic. The proposed objective supports both lightweight policy adaptation and joint policy-denoiser training, yielding improvements across reasoning and protein-generation domains while also improving efficiency under limited diffusion-step budgets. For future work, the policy parametrization and training scheme of the method can be improved to close the gap between current performance and oracle performance. 9Acknowledgements 
+
+The research was enabled in part by computational resources provided by the Digital Research Alliance of Canada ( https://alliancecan.ca ) and Mila ( https://mila.quebec ). 
+
+## References 
+
+Josh Abramson, Jonas Adler, Jack Dunger, Richard Evans, Tim Green, Alexander Pritzel, Olaf Ronneberger, Lindsay Willmore, Andrew J Ballard, Joshua Bambrick, et al. Accurate structure prediction of biomolecular interactions with alphafold 3. Nature , 630(8016):493–500, 2024. Sarah Alamdari, Nitya Thakkar, Rianne van den Berg, Neil Tenenholtz, Bob Strome, Alan Moses, Alex Xijie Lu, Nicolo Fusi, Ava Pardis Amini, and Kevin K Yang. Protein generation with evolutionary diffusion: sequence is all you need. BioRxiv , pp. 2023–09, 2023. Jacob Austin, Daniel D. Johnson, Jonathan Ho, Daniel Tarlow, and Rianne van den Berg. Structured denoising diffusion models in discrete state-spaces. In A. Beygelzimer, Y. Dauphin, P. Liang, and J. Wortman Vaughan (eds.), Advances in Neural Information Processing Systems , 2021. URL 
+
+https://openreview.net/forum?id=h7-XixPCAL .Heli Ben-Hamu, Itai Gat, Daniel Severo, Niklas Nolte, and Brian Karrer. Accelerated sampling from masked diffusion models via entropy bounded unmasking. arXiv preprint arXiv:2505.24857 , 2025. URL https://arxiv.org/abs/2505.24857 .Ricky T. Q. Chen and Yaron Lipman. Flow matching on general geometries. In The Twelfth International Conference on Learning Representations , 2024. URL https://openreview.net/ forum?id=g7ohDlTITL .Itai Gat, Tal Remez, Neta Shaul, Felix Kreuk, Ricky TQ Chen, Gabriel Synnaeve, Yossi Adi, and Yaron Lipman. Discrete flow matching. Advances in Neural Information Processing Systems (NeurIPS) , 37:133345–133385, 2024. Jonathan Ho, Ajay Jain, and Pieter Abbeel. Denoising diffusion probabilistic models. arXiv preprint arXiv:2006.11239 , 2020. Chunsan Hong, Seonho An, Min-Soo Kim, and Jong Chul Ye. Improving discrete diffusion unmasking policies beyond explicit reference policies. arXiv preprint arXiv:2510.05725 , 2025. URL https: //arxiv.org/abs/2510.05725 .Chin-Wei Huang, Milad Aghajohari, Joey Bose, Prakash Panangaden, and Aaron Courville. Riemannian diffusion models. In Alice H. Oh, Alekh Agarwal, Danielle Belgrave, and Kyunghyun Cho (eds.), Advances in Neural Information Processing Systems , 2022. URL 
+
+https://openreview.net/forum?id=ecevn9kPm4 .Zemin Huang, Yuhang Wang, Zhiyang Chen, and Guo-Jun Qi. Don’t settle too early: Self-reflective remasking for diffusion language models. arXiv preprint arXiv:2509.23653 , 2025. URL https: //arxiv.org/abs/2509.23653 .Metod Jazbec, Theo X. Olausson, Louis Béthune, Pierre Ablin, Michael Kirchhof, João Monteiro, Victor Turrisi, Jason Ramapuram, and Marco Cuturi. Learning unmasking policies for diffusion language models. arXiv preprint arXiv:2512.09106 , 2025. URL https://arxiv.org/abs/ 2512.09106 .Jaeyeon Kim, Kulin Shah, Vasilis Kontonis, Sham Kakade, and Sitan Chen. Train for the worst, plan for the best: Understanding token ordering in masked diffusions. arXiv preprint arXiv:2502.06768 ,2025. URL https://arxiv.org/abs/2502.06768 .Seul Lee, Karsten Kreis, Srimukh Prasad Veccham, Meng Liu, Danny Reidenbach, Yuxing Peng, Saee Paliwal, Weili Nie, and Arash Vahdat. Genmol: A drug discovery generalist with discrete diffusion. arXiv preprint arXiv:2501.06158 , 2025. 10 Zeming Lin, Halil Akin, Roshan Rao, Brian Hie, Zhongkai Zhu, Wenting Lu, Nikita Smetanin, Robert Verkuil, Ori Kabeli, Yaniv Shmueli, Allan dos Santos Costa, Maryam Fazel-Zarandi, Tom Sercu, Salvatore Candido, and Alexander Rives. Evolutionary-scale prediction of atomic level protein structure with a language model. bioRxiv , 2022. doi: 10.1101/2022.07.20.500902. URL 
+
+https://www.biorxiv.org/content/early/2022/10/31/2022.07.20.500902 .Viacheslav Meshchaninov, Egor Shibaev, Artem Makoian, Ivan Klimov, Danil Sheshenya, Andrei Malinin, Nikita Balagansky, Daniil Gavrilov, Aibek Alanov, and Dmitry Vetrov. Guided star-shaped masked diffusion. arXiv preprint arXiv:2510.08369 , 2025. URL https://arxiv.org/ abs/2510.08369 .Shen Nie, Fengqi Zhu, Zebin You, Xiaolu Zhang, Jingyang Ou, Jun Hu, Jun Zhou, Yankai Lin, Ji-Rong Wen, and Chongxuan Li. Large language diffusion models. arXiv preprint arXiv:2502.09992 ,2025. URL https://arxiv.org/abs/2502.09992 .Fred Zhangzhi Peng, Zachary Bezemek, Jarrid Rector-Brooks, Shuibai Zhang, Anru R. Zhang, Michael Bronstein, Avishek Joey Bose, and Alexander Tong. Planner aware path learning in diffusion language models training, 2025. URL https://arxiv.org/abs/2509.23405 .Robin Rombach, Andreas Blattmann, Dominik Lorenz, Patrick Esser, and Björn Ommer. High-resolution image synthesis with latent diffusion models. Conference on Computer Vision and Pattern Recognition (CVPR) , 2022. Chitwan Saharia, William Chan, Saurabh Saxena, Lala Li, Jay Whang, Emily L Denton, Kamyar Ghasemipour, Raphael Gontijo Lopes, Burcu Karagol Ayan, Tim Salimans, et al. Photorealistic text-to-image diffusion models with deep language understanding. Advances in Neural Information Processing Systems (NeurIPS) , 35:36479–36494, 2022. Subham Sekhar Sahoo, Marianne Arriola, Yair Schiff, Aaron Gokaslan, Edgar Marroquin, Justin T Chiu, Alexander Rush, and Volodymyr Kuleshov. Simple and effective masked diffusion language models. arXiv preprint arXiv:2406.07524 , 2024. Jiaxin Shi, Kehang Han, Zhe Wang, Arnaud Doucet, and Michalis K Titsias. Simplified and generalized masked diffusion for discrete data. arXiv preprint arXiv:2406.04329 , 2024. Xinyou Wang, Zaixiang Zheng, Fei Ye, Dongyu Xue, Shujian Huang, and Quanquan Gu. Diffusion language models are versatile protein learners. International Conference on Machine Learning (ICML) , 2024. Zhe Wang, Jiaxin Shi, Nicolas Heess, Arthur Gretton, and Michalis K. Titsias. Learning-order autore-gressive models with application to molecular graph generation. arXiv preprint arXiv:2503.05979 ,2025. URL https://arxiv.org/abs/2503.05979 .Joseph L Watson, David Juergens, Nathaniel R Bennett, Brian L Trippe, Jason Yim, Helen E Eisenach, Woody Ahern, Andrew J Borst, Robert J Ragotte, Lukas F Milles, et al. De novo design of protein structure and function with rfdiffusion. Nature , 620(7976):1089–1100, 2023. Jiacheng Ye, Jiahui Gao, Shansan Gong, Lin Zheng, Xin Jiang, Zhenguo Li, and Lingpeng Kong. Beyond autoregression: Discrete diffusion for complex reasoning and planning. arXiv preprint arXiv:2410.14157 , 2024. Yang Zhang and Jeffrey Skolnick. Scoring function for automated assessment of protein structure template quality. Proteins: Structure , 57, 2004. 11 A Experimental Details 
+
+A.1 Combinatorial Tasks Tasks and datasets. We consider two tasks. Sudoku : 9 ×9 puzzles where the model fills in blank cells given a partially completed grid, represented as a flat sequence of 81 tokens (digits 1–9). 3-SAT :Boolean satisfiability instances with 9 variables and 3 literals per clause, where the model must find a satisfying assignment given the clause structure. For Sudoku, we follow the dataset and evaluation protocol of Kim et al. (2025); for 3-SAT, we use the dataset of Ye et al. (2024). We report instance-level accuracy: an instance is correct only if the entire solution is valid. 
+
+Base model and training. We use a 6M-parameter GPT-2 architecture (3 layers, 384 hidden dimensions, 12 attention heads, vocabulary size 31) as the denoiser μθ , trained as a masked diffusion model (MDM) with T =20 diffusion steps. Training uses focal-loss-style token reweighting ( α=0 .25 ,
+
+γ=1 ) and linear time reweighting, with a learning rate of 10 −3, batch size of 1024, cosine learning rate schedule, and mixed-precision (fp16) on a single A100 GPU. We study two training regimes on top of this base model. In the policy-only regime, the denoiser is frozen and only the lightweight policy head is optimized using Equation (3); for Sudoku, the policy is trained for 24K steps after 115K denoiser pretraining steps, and for 3-SAT, the policy is trained for 7.5K steps after 58.5K denoiser pretraining steps. In the joint-training regime, we optimize the denoiser and policy together with the policy-aware weighted objective from Equation (4). 
+
+A.2 Protein / DPLM Experiments A.2.1 DPLM Setup Evaluation setup. For protein experiments, we adapt the same policy parameterization to DPLM-150M (Wang et al., 2024). The policy again takes per-position confidence scores together with final-layer hidden states and predicts routing logits over masked positions. Our DPLM setup supports both policy-only adaptation, where the pretrained backbone is frozen and only the lightweight policy head is trained, and joint training of the backbone and policy through the policy-aware weighted objective from Equation (4). In the joint DPLM, we initialize from the released DPLM-150M checkpoint of Wang et al. (2024) 2, unfreeze the backbone, and fine-tune with the adaptive DPLM training configuration using a reduced learning rate ( 4 × 10 −5) on A100 and H100 GPUs. For the DPLM results summarized in Table 1 and visualized in Figure 1, we generate proteins at sequence lengths {100 , 200 , 300 , 400 , 500 }; pLDDT is averaged across three random seeds after averaging within seed over sequence lengths, and we additionally report inner-TM diversity in the corresponding diversity plots. For the protein sequence generation comparison in Table 2, we follow Peng et al. (2025) and generate 100 sequences at lengths 200, 300, . . . , 800 and report pLDDT, pTM, pAE, foldability, token entropy, and sequence diversity. The heuristic baselines are high-confidence decoding and margin decoding, matching the orderings used in the combinatorial experiments. 
+
+A.2.2 Protein Sequence Generation Metrics 
+
+For protein evaluation, we fold each generated sequence with ESMFold (Lin et al., 2022) and use the predicted structures to assess quality, foldability, and diversity. For the joint comparison in Table 2, we report three structural confidence metrics, a composite foldability score, and two diversity statistics. The per-sequence structural metrics are: 
+
+pLDDT( i) = 100 × Ej∈N (i)
+
+"
+
+1 − |dpred  
+
+> ij
+
+− dtrue  
+
+> ij
+
+|
+
+dtrue 
+
+> ij
+
+#
+
+, (5) 
+
+pTM = max 
+
+> u
+
+1
+
+L
+
+> L
+
+X
+
+> i=1
+
+11 +  di,u (i)/d 0(L)2 , (6) 
+
+pAE( i, j ) = E
+
+h
+
+xpred  
+
+> i
+
+− xtrue  
+
+> j2
+
+i
+
+. (7) pLDDT measures local per-residue confidence, pTM measures global structural similarity and is adapted from the TM-score (Zhang & Skolnick, 2004), and pAE measures expected alignment error 
+
+> 2https://huggingface.co/airkingbd/dplm_150m
+
+12 across residue pairs. We report pLDDT averaged over residues and pAE averaged over residue pairs; higher pLDDT and pTM are better, while lower pAE is better. We also report a binary foldability rate, defined as the fraction of generated sequences satisfying pLDDT > 80 , pTM > 0.7, and pAE < 10 
+
+(as in Peng et al. (2025)). To assess diversity and possible mode collapse, we report token entropy, sequence diversity, and inner-TM. Token entropy and sequence diversity are defined as: 
+
+H = − X
+
+> a∈A
+
+p(a) log p(a), (8) 
+
+Id 
+
+
+
+x(m), x (n)
+
+= 1
+
+L
+
+> L
+
+X
+
+> i=1
+
+1
+
+h
+
+x(m) 
+
+> i
+
+= x(n)
+
+> i
+
+i
+
+, (9) 
+
+Diversity = 1 − 2
+
+B(B − 1) 
+
+X
+
+> 1≤m<n ≤B
+
+Id 
+
+
+
+x(m), x (n)
+
+. (10) Here, A is the set of amino acids observed in the generated set, p(a) is the empirical frequency of amino acid a, and B is the number of generated sequences being compared. Higher entropy and diversity indicate richer amino-acid usage and lower sequence-level collapse. We additionally report inner-TM, defined as the average pairwise TM-score between predicted structures in the generated set; lower inner-TM indicates that the sampled proteins are more structurally diverse. 
+
+## B Additional Policy Architecture Results 
+
+B.1 Transformer Policy Variant 
+
+In the policy-only setting, we also evaluated a transformer-based policy architecture as an alternative to the per-token MLP described in the main text. This variant replaces the MLP with a single transformer encoder layer, allowing the policy to attend across positions when making ordering decisions. We tested two configurations:    
+
+> Table 4: Comparison of policy architectures on Sudoku (deterministic-linear decoding, T=20 steps).
+
+Policy Architecture Accuracy 
+
+Per-token MLP (scores + hidden) 90.82% 
+
+Score Transformer (scores only) 89.84% Score + Hidden Transformer (scores + hidden) 90.23% • Score Transformer : Takes only per-token confidence scores as input, projecting each scalar to 
+
+d=128 before a transformer encoder layer. • Score + Hidden Transformer : Additionally conditions on the denoiser’s hidden states ( d=384 ), summing projected scores with hidden representations before the transformer layer. Results are shown in Table 4. The Score + Hidden Transformer achieves slightly lower than the simpler per-token MLP. This suggests that cross-position attention in the policy does not provide additional benefit for this task, and the per-token hidden-state representation already captures sufficient information for effective ordering decisions. 
+
+## C Relation of Objective to ELBO Bounds 
+
+We can derive our objective Equation (3) as an approximation to an ELBO bound. In particular, we make use of Proposition 3.2 from Peng et al. (2025). This gives an ELBO-style objective for masked diffusion decoding under an unmasking policy qϕ. Rewritten in the notation of this paper, the proposition can be stated as follows. 
+
+Proposition 1 (Proposition 3.2 of (Peng et al., 2025)) . Let qϕ(i | x0, x t) be a policy over masked positions at time t, and let pθ,ϕ (x0) denote the marginal probability of x0 under the unmasking 
+
+13 process obtained by decoding according to this policy. For each time t, let rϕt (· | x0) denote the distribution of the partially masked sequence xt under the policy-guided unmasking process. Then 
+
+log pθ,ϕ (x0) ≥ E θ,ϕ  
+
+> 1
+
+(x0) + Eθ,ϕ  
+
+> 2
+
+(x0), (11) 
+
+where 
+
+Eθ,ϕ  
+
+> 1
+
+(x0) = Et∼U [0 ,1] 
+
+"
+
+c(αt)Ext∼rϕt (·| x0)
+
+" LX
+
+> i=1
+
+qϕ(i | x0, x t) CE( xi
+
+> 0
+
+, μ θ (xt)[ i, ·]) 
+
+## 
+
+, (12) 
+
+and 
+
+Eθ,ϕ  
+
+> 2
+
+(x0) = −Et∼U [0 ,1] 
+
+"
+
+c(αt)Ext∼rϕt (·| x0)
+
+" LX
+
+> i=1
+
+qϕ(i | x0, x t) log qϕ(i | x0, x t)
+
+Fθ,ϕ (xt, x i
+
+> 0
+
+, i )
+
+## 
+
+. (13) 
+
+Here c(αt) is some constant depending on the schedule, and Fθ,ϕ (xt, x i
+
+> 0
+
+, i ) is an auxiliary distribu-tion: 
+
+Fθ,ϕ (xt, x i
+
+> 0
+
+, i ) = Ez∼μθ (xt)
+
+h
+
+qϕ(i | z−i,x i 
+
+> 0
+
+, x t)
+
+i
+
+, (14) 
+
+z−i,x i 
+
+> 0
+
+is z with token i set to value xi
+
+> 0
+
+.
+
+To simplify for our setting, since x0 is sampled from the denoiser, we can consider the policy 
+
+qϕ(i | x0 ∼ μθ (xt), x t) as being conditioned on only xt, so that qϕ(i | xt, x 0) = qϕ(i | xt). With this notation, we note that the first term E1 is very similar to the negative of the policy-weighted loss in Equation (3) evaluated along policy-induced paths rϕt (· | x0) rather than the standard noising process p(xt | x0).The quantity Fθ,ϕ (xt, x i
+
+> 0
+
+, i ) in the second term evaluates the policy probability of unmasking position 
+
+i to have token xi 
+
+> 0
+
+(marginalizing over possible denoiser randomness). Explicitly evaluating the E2
+
+term requires multiple passes of the policy module. From the above ELBO, if we make the following approximations, then we can recover our objective in Equation (3): • sample xt from the noising distribution p(xt | x0) rather than the policy-induced distribution 
+
+rϕt (· | x0), since the former is tractable as simple. Peng et al. (2025) also make this simplification. • we omit the second term Eθ,ϕ  
+
+> 2
+
+(x0), which involves a term Fθ,ϕ (xt, x i
+
+> 0
+
+, i ) that is difficult to compute. This term may be omitted when fixing the policy (such as when it is obtained from a heuristic). By contrast, we learn our policy, but argue that omitting E2 still yields a reasonable objective for training the policy, which we reinforce empirically. Given these approximations, we obtain our policy weighted objective as a surrogate of the policy-induced ELBO. We use this objective for both policy-only training (in Equation (3)), as well as joint training of the policy and denoiser (in Equation (4)). 
+
+## D Broader Impacts 
+
+The work proposes a method for improving masked diffusion models by learning the unmasking order. This is a general algorithm which has potential uses in biological applications (e.g. generating protein or DNA sequences) as well as potential harmful consequences such as for instance, in generating code with exploitable weaknesses. However, we discourage such applications. 14
